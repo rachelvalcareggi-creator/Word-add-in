@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Style Pane</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <script src="taskpane.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      color: #212529;
+      padding: 16px;
+    }
+    h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #4F46E5;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e7ff;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6c757d;
+      margin: 18px 0 8px;
+    }
+    .style-btn {
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border: 1.5px solid #e0e7ff;
+      border-radius: 8px;
+      background: white;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .style-btn:hover { background: #eef2ff; border-color: #6366f1; color: #4F46E5; }
+    .style-btn .preview {
+      display: block;
+      font-weight: 400;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+    .divider { border: none; border-top: 1px solid #e9ecef; margin: 16px 0; }
+    #status {
+      font-size: 12px;
+      color: #6366f1;
+      margin-top: 12px;
+      min-height: 18px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎨 Style Pane</h2>
+
+  <div class="section-title">Headings</div>
+  <button class="style-btn" onclick="applyStyle('Heading 1')">
+    Heading 1 <span class="preview">Large section title</span>
+  </button>
+  <button class="style-btn" onclick="applyStyle('Heading 2')">
+    Heading 2 <span class="preview">Sub-section title</span>
+  </button>
+  <button class="style-btn" onclick="applyStyle('Heading 3')">
+    Heading 3 <span class="preview">Minor heading</span>
+  </button>
+
+  <hr class="divider" />
+
+  <div class="section-title">Body</div>
+  <button class="style-btn" onclick="applyStyle('Normal')">
+    Normal <span class="preview">Default paragraph style</span>
+  </button>
+  <button class="style-btn" onclick="applyStyle('Quote')">
+    Quote <span class="preview">Indented quote block</span>
+  </button>
+  <button class="style-btn" onclick="applyStyle('List Paragraph')">
+    List Paragraph <span class="preview">Indented list item</span>
+  </button>
+
+  <hr class="divider" />
+
+  <div class="section-title">Special</div>
+  <button class="style-btn" onclick="applyStyle('Intense Quote')">
+    Intense Quote <span class="preview">Highlighted callout text</span>
+  </button>
+  <button class="style-btn" onclick="applyStyle('Caption')">
+    Caption <span class="preview">Figure / table caption</span>
+  </button>
+
+  <p id="status"></p>
+</body>
+</html>
