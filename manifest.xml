@@ -9,7 +9,7 @@
   <!-- App Identity -->
   <Id>00000000-0000-0000-0000-000000000001</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Your Company Name</ProviderName>
+  <ProviderName>UpsideDown Productions</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="My Client Add-in" />
   <Description DefaultValue="Custom Word tools for your workflow." />
