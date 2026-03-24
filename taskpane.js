@@ -104,14 +104,32 @@ async function createCover() {
       const pageWidth = section.pageWidth;
       const pageHeight = section.pageHeight;
 
+      const titlePara = insertLocation.insertParagraph(title, "after");
+      titlePara.style = "Title";
+      titlePara.font.name = "Century Gothic";
+      titlePara.font.size = 40;
+      titlePara.font.bold = true;
+
+      const subtitlePara = titlePara.getRange("end").insertParagraph(subtitle, "after");
+      subtitlePara.font.name = "Century Gothic";
+      subtitlePara.font.size = 24;
+
+      const datePara = subtitlePara.getRange("end").insertParagraph(date, "after");
+      datePara.font.name = "Century Gothic";
+      datePara.font.size = 16;
+      datePara.font.color = "#6c757d";
+
+      const textEndLocation = datePara.getRange("end");
+
       if (selectedCover === 3 && userImageBase64) {
         const base64Data = userImageBase64.split(",")[1];
-        const img = insertLocation.insertInlinePictureFromBase64(base64Data, "before");
+        const img = textEndLocation.insertInlinePictureFromBase64(base64Data, "after");
         img.width = pageWidth;
         img.height = pageHeight;
         img.lockAspectRatio = false;
-        insertLocation = img.getRange("end");
-        insertLocation.insertParagraph("", "after");
+        try {
+          img.wrap = Word.WrapType.behind;
+        } catch (e) {}
       } else {
         const imgUrl = `https://rachelvalcareggi-creator.github.io/Word-add-in/assets/cover${selectedCover}.png`;
         const response = await fetch(imgUrl);
@@ -121,33 +139,19 @@ async function createCover() {
         await new Promise((resolve) => {
           reader.onload = async (e) => {
             const base64Data = e.target.result.split(",")[1];
-            const img = insertLocation.insertInlinePictureFromBase64(base64Data, "before");
+            const img = textEndLocation.insertInlinePictureFromBase64(base64Data, "after");
             img.width = pageWidth;
             img.height = pageHeight;
             img.lockAspectRatio = false;
-            insertLocation = img.getRange("end");
-            insertLocation.insertParagraph("", "after");
+            try {
+              img.wrap = Word.WrapType.behind;
+            } catch (e) {}
             await context.sync();
             resolve();
           };
         });
         await context.sync();
       }
-
-      const titlePara = insertLocation.insertParagraph(title, "after");
-      titlePara.style = "Title";
-      titlePara.font.name = "Century Gothic";
-      titlePara.font.size = 32;
-      titlePara.font.bold = true;
-
-      const subtitlePara = titlePara.getRange("end").insertParagraph(subtitle, "after");
-      subtitlePara.font.name = "Century Gothic";
-      subtitlePara.font.size = 18;
-
-      const datePara = subtitlePara.getRange("end").insertParagraph(date, "after");
-      datePara.font.name = "Century Gothic";
-      datePara.font.size = 14;
-      datePara.font.color = "#6c757d";
 
       await context.sync();
     });
