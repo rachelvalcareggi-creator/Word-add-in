@@ -39,39 +39,21 @@ function previewUserImage(input) {
   reader.onload = function (e) {
     userImageBase64 = e.target.result;
     document.getElementById("imageName").textContent = "Selected: " + file.name;
+    autoCreateCover();
   };
   reader.readAsDataURL(file);
 }
 
-function skipCover() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ cover: "none" }));
-  showMainContent();
-}
-
-function resetSetup() {
-  localStorage.removeItem(STORAGE_KEY);
-  userImageBase64 = null;
-  document.getElementById("inputTitle").value = "";
-  document.getElementById("inputSubtitle").value = "";
-  document.getElementById("inputDate").value = "";
-  document.getElementById("userImageInput").value = "";
-  document.getElementById("imageName").textContent = "";
-  document.getElementById("mainContent").classList.remove("open");
-  showSetupDialog();
-}
-
-async function createCover() {
+async function autoCreateCover() {
   const title = document.getElementById("inputTitle").value.trim();
   const subtitle = document.getElementById("inputSubtitle").value.trim();
   const date = document.getElementById("inputDate").value.trim();
 
   if (!title || !subtitle || !date) {
-    setStatus("Please fill all fields");
     return;
   }
 
   if (!userImageBase64) {
-    setStatus("Please upload an image");
     return;
   }
 
@@ -121,7 +103,7 @@ async function createCover() {
 
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ cover: selectedCover })
+      JSON.stringify({ cover: "custom" })
     );
 
     showMainContent();
@@ -130,6 +112,23 @@ async function createCover() {
     console.error("createCover error:", error);
     setStatus("Error: " + error.message);
   }
+}
+
+function skipCover() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ cover: "none" }));
+  showMainContent();
+}
+
+function resetSetup() {
+  localStorage.removeItem(STORAGE_KEY);
+  userImageBase64 = null;
+  document.getElementById("inputTitle").value = "";
+  document.getElementById("inputSubtitle").value = "";
+  document.getElementById("inputDate").value = "";
+  document.getElementById("userImageInput").value = "";
+  document.getElementById("imageName").textContent = "";
+  document.getElementById("mainContent").classList.remove("open");
+  showSetupDialog();
 }
 
 async function applyStyle(styleName) {
