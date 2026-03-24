@@ -24,7 +24,9 @@ function showSetupDialog() {
 }
 
 function showMainContent() {
-  document.getElementById("setupOverlay").classList.remove("open");
+  const overlay = document.getElementById("setupOverlay");
+  overlay.classList.remove("open");
+  overlay.style.display = "none";
   document.getElementById("mainContent").classList.add("open");
 }
 
