@@ -233,9 +233,19 @@ async function insertLandscapePage() {
 async function insertTable() {
   try {
     await Word.run(async (context) => {
-      const selection = context.document.getSelection();
-      const table = selection.insertTable(4, 3);
+      const body = context.document.body;
+      body.paragraphs.load("items");
+      await context.sync();
 
+      let insertRange;
+      if (body.paragraphs.items.length > 0) {
+        const lastPara = body.paragraphs.items[body.paragraphs.items.length - 1];
+        insertRange = lastPara.getRange("end");
+      } else {
+        insertRange = body.getRange("end");
+      }
+
+      const table = insertRange.insertTable(4, 3);
       table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
       table.getCell(0, 0).body.text = "Column 1";
       table.getCell(0, 1).body.text = "Column 2";
