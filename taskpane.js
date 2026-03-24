@@ -131,7 +131,20 @@ function createCoverWithImage() {
       const firstPara = body.paragraphs.getFirst();
       const insertPoint = firstPara.getRange("start");
 
-      const titlePara = insertPoint.insertParagraph(title, "after");
+      const placeholderPara = insertPoint.insertParagraph("", "after");
+      placeholderPara.font.size = 1;
+      const placeholderEnd = placeholderPara.getRange("end");
+
+      const imgInsert = placeholderEnd.insertInlinePictureFromBase64(imgBase64, "after");
+      imgInsert.width = pageWidth;
+      imgInsert.height = pageHeight;
+      imgInsert.lockAspectRatio = false;
+
+      await context.sync();
+
+      const textStart = imgInsert.getRange("end");
+
+      const titlePara = textStart.insertParagraph(title, "after");
       titlePara.style = "Title";
       titlePara.font.name = "Century Gothic";
       titlePara.font.size = 40;
@@ -149,18 +162,11 @@ function createCoverWithImage() {
       datePara.font.color = "#6c757d";
       datePara.alignment = Word.Alignment.left;
 
-      const textEnd = datePara.getRange("end");
-
-      const imgInsert = textEnd.insertInlinePictureFromBase64(imgBase64, "after");
-      imgInsert.width = pageWidth;
-      imgInsert.height = pageHeight;
-      imgInsert.lockAspectRatio = false;
-
       await context.sync();
     }).then(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ cover: "1" }));
       showMainContent();
-      setStatus("Cover created!");
+      setStatus("Cover created! Click 'Add Image' to add your photo.");
     }).catch((error) => {
       console.error("createCoverWithImage error:", error);
       setStatus("Error creating cover");
@@ -181,6 +187,44 @@ function resetSetup() {
   document.querySelectorAll(".cover-thumb").forEach((el) => el.classList.remove("selected"));
   document.getElementById("mainContent").classList.remove("open");
   showSetupDialog();
+}
+
+function addImageToCover() {
+  document.getElementById("coverImageInput").click();
+}
+
+function handleCoverImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  setStatus("Adding image...");
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const base64 = e.target.result.split(",")[1];
+
+    Word.run(async (context) => {
+      const body = context.document.body;
+      const paragraphs = body.paragraphs;
+      paragraphs.load("items");
+      await context.sync();
+
+      if (paragraphs.items.length > 2) {
+        const insertRange = paragraphs.items[1].getRange("end");
+        const img = insertRange.insertInlinePictureFromBase64(base64, "after");
+        img.width = 5040;
+        img.height = 3360;
+        img.lockAspectRatio = false;
+        await context.sync();
+        setStatus("Image added!");
+      }
+    }).catch((error) => {
+      console.error("handleCoverImageUpload error:", error);
+      setStatus("Error adding image");
+    });
+  };
+  reader.readAsDataURL(file);
+  input.value = "";
 }
 
 async function applyStyle(styleName) {

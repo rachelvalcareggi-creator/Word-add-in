@@ -287,6 +287,12 @@
       Reset Cover Setup
     </button>
 
+    <div class="section-title">Cover</div>
+    <button class="menu-btn" onclick="addImageToCover()">
+      Add Image <span class="preview">Add your photo to the cover</span>
+    </button>
+    <input type="file" id="coverImageInput" accept="image/*" style="display: none;" onchange="handleCoverImageUpload(this)" />
+
     <div class="section-title">Headings</div>
     <button class="menu-btn" onclick="applyStyle('Heading 1')">Heading 1</button>
     <button class="menu-btn" onclick="applyStyle('Heading 2')">Heading 2</button>
