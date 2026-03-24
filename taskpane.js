@@ -62,6 +62,19 @@ function skipCover() {
   showMainContent();
 }
 
+function resetSetup() {
+  localStorage.removeItem(STORAGE_KEY);
+  selectedCover = null;
+  userImageBase64 = null;
+  document.getElementById("inputTitle").value = "";
+  document.getElementById("inputSubtitle").value = "";
+  document.getElementById("inputDate").value = "";
+  document.querySelectorAll(".cover-thumb").forEach((el) => el.classList.remove("selected"));
+  document.getElementById("userImageSection").style.display = "none";
+  document.getElementById("mainContent").classList.remove("open");
+  showSetupDialog();
+}
+
 async function createCover() {
   const title = document.getElementById("inputTitle").value.trim();
   const subtitle = document.getElementById("inputSubtitle").value.trim();
@@ -234,31 +247,27 @@ async function insertTable() {
   try {
     await Word.run(async (context) => {
       const body = context.document.body;
-      body.paragraphs.load("items");
+      body.insertTable(0, 4, 3);
+      const tables = body.tables;
+      tables.load("items");
       await context.sync();
 
-      let insertRange;
-      if (body.paragraphs.items.length > 0) {
-        const lastPara = body.paragraphs.items[body.paragraphs.items.length - 1];
-        insertRange = lastPara.getRange("end");
-      } else {
-        insertRange = body.getRange("end");
+      if (tables.items.length > 0) {
+        const table = tables.items[0];
+        table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
+        table.getCell(0, 0).body.paragraphs.getItem(0).text = "Column 1";
+        table.getCell(0, 1).body.paragraphs.getItem(0).text = "Column 2";
+        table.getCell(0, 2).body.paragraphs.getItem(0).text = "Column 3";
+
+        table.rows.getItem(0).cells.format.fill = "#4F46E5";
+        table.rows.getItem(0).cells.items.forEach((cell) => {
+          cell.body.paragraphs.getItem(0).font.color = "white";
+          cell.body.paragraphs.getItem(0).font.bold = true;
+          cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
+        });
+        await context.sync();
       }
 
-      const table = insertRange.insertTable(4, 3);
-      table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
-      table.getCell(0, 0).body.text = "Column 1";
-      table.getCell(0, 1).body.text = "Column 2";
-      table.getCell(0, 2).body.text = "Column 3";
-
-      table.rows.getItem(0).cells.format.fill = "#4F46E5";
-      table.rows.getItem(0).cells.items.forEach((cell) => {
-        cell.body.paragraphs.getItem(0).font.color = "white";
-        cell.body.paragraphs.getItem(0).font.bold = true;
-        cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
-      });
-
-      await context.sync();
       setStatus("Table inserted");
     });
   } catch (error) {
