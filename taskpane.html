@@ -244,21 +244,10 @@
       </div>
 
       <div class="cover-section">
-        <label>Select Cover</label>
-        <div class="cover-options">
-          <div class="cover-thumb" data-cover="1" onclick="selectCover(1)">
-            <img src="assets/cover1.png" alt="Cover 1" />
-          </div>
-          <div class="cover-thumb" data-cover="2" onclick="selectCover(2)">
-            <img src="assets/cover2.png" alt="Cover 2" />
-          </div>
-          <div class="cover-thumb placeholder" data-cover="3" onclick="selectCover(3)">
-            <span>Upload<br>Your Image</span>
-          </div>
-        </div>
+        <label>Upload Your Cover Image</label>
         <div id="userImageSection">
-          <label>Choose your image</label>
           <input type="file" id="userImageInput" accept="image/*" onchange="previewUserImage(this)" />
+          <p id="imageName" style="margin-top: 8px; font-size: 12px; color: #6c757d;"></p>
         </div>
       </div>
 

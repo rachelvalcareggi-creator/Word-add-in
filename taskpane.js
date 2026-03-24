@@ -21,6 +21,7 @@ function checkSetup() {
 function showSetupDialog() {
   document.getElementById("setupOverlay").classList.add("open");
   document.getElementById("inputDate").value = new Date().toLocaleDateString();
+  selectedCover = 1;
 }
 
 function showMainContent() {
@@ -30,22 +31,6 @@ function showMainContent() {
   document.getElementById("mainContent").classList.add("open");
 }
 
-function selectCover(num) {
-  selectedCover = num;
-  document.querySelectorAll(".cover-thumb").forEach((el) => {
-    el.classList.remove("selected");
-  });
-  document.querySelector(`[data-cover="${num}"]`).classList.add("selected");
-
-  const userSection = document.getElementById("userImageSection");
-  if (num === 3) {
-    userSection.style.display = "block";
-  } else {
-    userSection.style.display = "none";
-    userImageBase64 = null;
-  }
-}
-
 function previewUserImage(input) {
   const file = input.files[0];
   if (!file) return;
@@ -53,6 +38,7 @@ function previewUserImage(input) {
   const reader = new FileReader();
   reader.onload = function (e) {
     userImageBase64 = e.target.result;
+    document.getElementById("imageName").textContent = "Selected: " + file.name;
   };
   reader.readAsDataURL(file);
 }
@@ -64,13 +50,12 @@ function skipCover() {
 
 function resetSetup() {
   localStorage.removeItem(STORAGE_KEY);
-  selectedCover = null;
   userImageBase64 = null;
   document.getElementById("inputTitle").value = "";
   document.getElementById("inputSubtitle").value = "";
   document.getElementById("inputDate").value = "";
-  document.querySelectorAll(".cover-thumb").forEach((el) => el.classList.remove("selected"));
-  document.getElementById("userImageSection").style.display = "none";
+  document.getElementById("userImageInput").value = "";
+  document.getElementById("imageName").textContent = "";
   document.getElementById("mainContent").classList.remove("open");
   showSetupDialog();
 }
@@ -85,12 +70,7 @@ async function createCover() {
     return;
   }
 
-  if (!selectedCover) {
-    setStatus("Please select a cover");
-    return;
-  }
-
-  if (selectedCover === 3 && !userImageBase64) {
+  if (!userImageBase64) {
     setStatus("Please upload an image");
     return;
   }
@@ -98,14 +78,6 @@ async function createCover() {
   setStatus("Creating cover...");
 
   try {
-    let imageBase64 = null;
-
-    if (selectedCover === 3 && userImageBase64) {
-      imageBase64 = userImageBase64;
-    } else {
-      imageBase64 = await loadImageAsBase64(`assets/cover${selectedCover}.png`);
-    }
-
     await Word.run(async (context) => {
       const body = context.document.body;
       const section = context.document.sections.getFirst();
@@ -118,7 +90,7 @@ async function createCover() {
       const firstPara = body.paragraphs.getFirst();
       const insertPoint = firstPara.getRange("start");
 
-      const imgBase64 = imageBase64.split(",")[1];
+      const imgBase64 = userImageBase64.split(",")[1];
       const img = insertPoint.insertInlinePictureFromBase64(imgBase64, "before");
       img.width = pageWidth;
       img.height = pageHeight;
@@ -158,30 +130,6 @@ async function createCover() {
     console.error("createCover error:", error);
     setStatus("Error: " + error.message);
   }
-}
-
-function loadImageAsBase64(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = function () {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
-      try {
-        const dataUrl = canvas.toDataURL("image/png");
-        resolve(dataUrl);
-      } catch (e) {
-        reject(e);
-      }
-    };
-    img.onerror = function (e) {
-      reject(new Error("Failed to load image: " + url));
-    };
-    img.src = url;
-  });
 }
 
 async function applyStyle(styleName) {
