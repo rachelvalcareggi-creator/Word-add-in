@@ -68,23 +68,35 @@ function createDocumentWithoutCover(title, subtitle, date) {
     const firstPara = body.paragraphs.getFirst();
     const insertPoint = firstPara.getRange("start");
 
-    const titlePara = insertPoint.insertParagraph(title, "after");
-    titlePara.style = "Title";
-    titlePara.font.name = "Century Gothic";
-    titlePara.font.size = 40;
-    titlePara.font.bold = true;
-    titlePara.alignment = Word.Alignment.left;
+    const titleControl = insertPoint.insertContentControl();
+    titleControl.type = "richText";
+    titleControl.title = "Title";
+    titleControl.tag = "title";
+    titleControl.insertText(title, "end");
+    const titleRange = titleControl.getRange();
+    titleRange.paragraphFormat.styleBuiltIn = "Title";
+    titleRange.font.name = "Century Gothic";
+    titleRange.font.size = 40;
+    titleRange.font.bold = true;
 
-    const subtitlePara = titlePara.getRange("end").insertParagraph(subtitle, "after");
-    subtitlePara.font.name = "Century Gothic";
-    subtitlePara.font.size = 24;
-    subtitlePara.alignment = Word.Alignment.left;
+    const subtitleControl = titleRange.insertContentControl();
+    subtitleControl.type = "richText";
+    subtitleControl.title = "Subtitle";
+    subtitleControl.tag = "subtitle";
+    subtitleControl.insertText(subtitle, "end");
+    const subtitleRange = subtitleControl.getRange();
+    subtitleRange.font.name = "Century Gothic";
+    subtitleRange.font.size = 24;
 
-    const datePara = subtitlePara.getRange("end").insertParagraph(date, "after");
-    datePara.font.name = "Century Gothic";
-    datePara.font.size = 16;
-    datePara.font.color = "#6c757d";
-    datePara.alignment = Word.Alignment.left;
+    const dateControl = subtitleRange.insertContentControl();
+    dateControl.type = "richText";
+    dateControl.title = "Date";
+    dateControl.tag = "date";
+    dateControl.insertText(date, "end");
+    const dateRange = dateControl.getRange();
+    dateRange.font.name = "Century Gothic";
+    dateRange.font.size = 16;
+    dateRange.font.color = "#6c757d";
 
     await context.sync();
   }).then(() => {
@@ -131,42 +143,58 @@ function createCoverWithImage() {
       const firstPara = body.paragraphs.getFirst();
       const insertPoint = firstPara.getRange("start");
 
-      const placeholderPara = insertPoint.insertParagraph("", "after");
-      placeholderPara.font.size = 1;
-      const placeholderEnd = placeholderPara.getRange("end");
-
-      const imgInsert = placeholderEnd.insertInlinePictureFromBase64(imgBase64, "after");
-      imgInsert.width = pageWidth;
-      imgInsert.height = pageHeight;
-      imgInsert.lockAspectRatio = false;
+      const coverControl = insertPoint.insertContentControl();
+      coverControl.type = "picture";
+      coverControl.title = "Cover Image";
+      coverControl.tag = "coverImage";
+      coverControl.insertInlinePictureFromBase64(imgBase64, "end");
+      const coverRange = coverControl.getRange();
+      coverRange.inlinePicture.width = pageWidth;
+      coverRange.inlinePicture.height = pageHeight;
 
       await context.sync();
 
-      const textStart = imgInsert.getRange("end");
+      const placeholderControl = coverRange.insertContentControl();
+      placeholderControl.type = "picture";
+      placeholderControl.title = "Add Your Image";
+      placeholderControl.tag = "userImagePlaceholder";
+      placeholderControl.placeholderText = "Click here to add your image";
 
-      const titlePara = textStart.insertParagraph(title, "after");
-      titlePara.style = "Title";
-      titlePara.font.name = "Century Gothic";
-      titlePara.font.size = 40;
-      titlePara.font.bold = true;
-      titlePara.alignment = Word.Alignment.left;
+      const titleControl = placeholderControl.getRange().insertContentControl();
+      titleControl.type = "richText";
+      titleControl.title = "Title";
+      titleControl.tag = "title";
+      titleControl.insertText(title, "end");
+      const titleRange = titleControl.getRange();
+      titleRange.paragraphFormat.styleBuiltIn = "Title";
+      titleRange.font.name = "Century Gothic";
+      titleRange.font.size = 40;
+      titleRange.font.bold = true;
 
-      const subtitlePara = titlePara.getRange("end").insertParagraph(subtitle, "after");
-      subtitlePara.font.name = "Century Gothic";
-      subtitlePara.font.size = 24;
-      subtitlePara.alignment = Word.Alignment.left;
+      const subtitleControl = titleRange.insertContentControl();
+      subtitleControl.type = "richText";
+      subtitleControl.title = "Subtitle";
+      subtitleControl.tag = "subtitle";
+      subtitleControl.insertText(subtitle, "end");
+      const subtitleRange = subtitleControl.getRange();
+      subtitleRange.font.name = "Century Gothic";
+      subtitleRange.font.size = 24;
 
-      const datePara = subtitlePara.getRange("end").insertParagraph(date, "after");
-      datePara.font.name = "Century Gothic";
-      datePara.font.size = 16;
-      datePara.font.color = "#6c757d";
-      datePara.alignment = Word.Alignment.left;
+      const dateControl = subtitleRange.insertContentControl();
+      dateControl.type = "richText";
+      dateControl.title = "Date";
+      dateControl.tag = "date";
+      dateControl.insertText(date, "end");
+      const dateRange = dateControl.getRange();
+      dateRange.font.name = "Century Gothic";
+      dateRange.font.size = 16;
+      dateRange.font.color = "#6c757d";
 
       await context.sync();
     }).then(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ cover: "1" }));
       showMainContent();
-      setStatus("Cover created! Click 'Add Image' to add your photo.");
+      setStatus("Cover created!");
     }).catch((error) => {
       console.error("createCoverWithImage error:", error);
       setStatus("Error creating cover");
