@@ -46,7 +46,37 @@
 
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
 
-            <!-- Custom tab — shows as its own tab in the ribbon -->
+            <!-- ── HOME TAB: single Style Pane button ── -->
+            <OfficeTab id="TabHome">
+              <Group id="HomeStyleGroup">
+                <Label resid="StyleGroup.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+
+                <Control xsi:type="Button" id="HomeOpenStylePane">
+                  <Label resid="OpenStylePane.Label" />
+                  <Supertip>
+                    <Title resid="OpenStylePane.Label" />
+                    <Description resid="OpenStylePane.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>StylePane</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url" />
+                  </Action>
+                </Control>
+
+              </Group>
+            </OfficeTab>
+
+            <!-- ── CUSTOM TAB: all tools ── -->
             <CustomTab id="MyToolsTab">
               <Label resid="TabLabel" />
 
@@ -58,7 +88,6 @@
                   <bt:Image size="80" resid="Icon.80x80" />
                 </Icon>
 
-                <!-- Button 1: Style Pane -->
                 <Control xsi:type="Button" id="OpenStylePane">
                   <Label resid="OpenStylePane.Label" />
                   <Supertip>
@@ -86,7 +115,6 @@
                   <bt:Image size="80" resid="Icon.80x80" />
                 </Icon>
 
-                <!-- Button 2: Insert Landscape Page -->
                 <Control xsi:type="Button" id="InsertLandscapePage">
                   <Label resid="InsertLandscape.Label" />
                   <Supertip>
@@ -103,7 +131,6 @@
                   </Action>
                 </Control>
 
-                <!-- Button 3: Insert Table -->
                 <Control xsi:type="Button" id="InsertTable">
                   <Label resid="InsertTable.Label" />
                   <Supertip>
@@ -151,7 +178,7 @@
         <bt:String id="InsertTable.Label" DefaultValue="Insert Table" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Click the My Tools tab in the ribbon to access your tools." />
+        <bt:String id="GetStarted.Description" DefaultValue="Click Style Pane in the Home tab, or visit My Tools for all features." />
         <bt:String id="OpenStylePane.Tooltip" DefaultValue="Open the Style Pane to apply custom styles." />
         <bt:String id="InsertLandscape.Tooltip" DefaultValue="Insert a new landscape-oriented page at the cursor." />
         <bt:String id="InsertTable.Tooltip" DefaultValue="Insert a formatted table at the cursor position." />
