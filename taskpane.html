@@ -111,17 +111,10 @@
 <body>
   <h2>🎨 Rachele Tools</h2>
 
-  <button class="menu-btn" id="stylesBtn" onclick="toggleStyles()">
-    <span>
-      Styles
-      <span class="preview">Apply Word styles</span>
-    </span>
-    <span class="arrow">▼</span>
-  </button>
-  <div class="style-dropdown" id="stylesDropdown">
-    <div class="loading" id="stylesLoading">Loading styles...</div>
-    <div id="stylesList"></div>
-  </div>
+  <div class="section-title">Headings</div>
+  <button class="menu-btn" onclick="applyStyle('Heading 1')">Heading 1</button>
+  <button class="menu-btn" onclick="applyStyle('Heading 2')">Heading 2</button>
+  <button class="menu-btn" onclick="applyStyle('Heading 3')">Heading 3</button>
 
   <hr class="divider" />
 

@@ -1,40 +1,8 @@
 /* taskpane.js — Rachele Tools logic */
 
 Office.onReady(() => {
-  renderStylesDropdown();
+  // Ready
 });
-
-function toggleStyles() {
-  const btn = document.getElementById("stylesBtn");
-  const dropdown = document.getElementById("stylesDropdown");
-  
-  btn.classList.toggle("active");
-  dropdown.classList.toggle("open");
-}
-
-function renderStylesDropdown() {
-  const stylesList = document.getElementById("stylesList");
-  const loading = document.getElementById("stylesLoading");
-  
-  if (loading) loading.style.display = "none";
-  
-  stylesList.innerHTML = `
-    <div class="dropdown-section">Headings</div>
-    <button class="dropdown-item" onclick="applyStyle('Heading 1')">Heading 1</button>
-    <button class="dropdown-item" onclick="applyStyle('Heading 2')">Heading 2</button>
-    <button class="dropdown-item" onclick="applyStyle('Heading 3')">Heading 3</button>
-    
-    <div class="dropdown-section">Bullets</div>
-    <button class="dropdown-item" onclick="applyStyle('List Bullet')">Bullet 1</button>
-    <button class="dropdown-item" onclick="applyStyle('List Bullet 2')">Bullet 2</button>
-    <button class="dropdown-item" onclick="applyStyle('List Bullet 3')">Bullet 3</button>
-    
-    <div class="dropdown-section">Numbering</div>
-    <button class="dropdown-item" onclick="applyStyle('List Number')">Number 1</button>
-    <button class="dropdown-item" onclick="applyStyle('List Number 2')">Number 2</button>
-    <button class="dropdown-item" onclick="applyStyle('List Number 3')">Number 3</button>
-  `;
-}
 
 async function applyStyle(styleName) {
   try {
