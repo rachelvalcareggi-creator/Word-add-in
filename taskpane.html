@@ -85,6 +85,11 @@
       gap: 10px;
       justify-content: center;
     }
+    .cover-section.centered {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .cover-thumb {
       width: 80px;
       height: 100px;
@@ -244,15 +249,16 @@
       </div>
 
       <div class="cover-section">
-        <label>Upload Your Cover Image</label>
-        <div id="userImageSection">
-          <input type="file" id="userImageInput" accept="image/*" onchange="previewUserImage(this)" />
-          <p id="imageName" style="margin-top: 8px; font-size: 12px; color: #6c757d;"></p>
+        <label>Select Cover</label>
+        <div class="cover-options">
+          <div class="cover-thumb" data-cover="1" onclick="selectCover(1)">
+            <img src="assets/cover1.png" alt="Cover 1" />
+          </div>
         </div>
       </div>
 
       <div class="dialog-buttons">
-        <button id="btnNoCover" onclick="skipCover()">No Cover</button>
+        <button id="btnNoCover" onclick="handleCoverSelection()">No Cover</button>
       </div>
     </div>
   </div>

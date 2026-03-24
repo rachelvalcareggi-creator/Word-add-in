@@ -21,7 +21,7 @@ function checkSetup() {
 function showSetupDialog() {
   document.getElementById("setupOverlay").classList.add("open");
   document.getElementById("inputDate").value = new Date().toLocaleDateString();
-  selectedCover = 1;
+  selectedCover = null;
 }
 
 function showMainContent() {
@@ -31,36 +31,91 @@ function showMainContent() {
   document.getElementById("mainContent").classList.add("open");
 }
 
-function previewUserImage(input) {
-  const file = input.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    userImageBase64 = e.target.result;
-    document.getElementById("imageName").textContent = "Selected: " + file.name;
-    autoCreateCover();
-  };
-  reader.readAsDataURL(file);
+function selectCover(num) {
+  selectedCover = num;
+  document.querySelectorAll(".cover-thumb").forEach((el) => {
+    el.classList.remove("selected");
+  });
+  document.querySelector(`[data-cover="${num}"]`).classList.add("selected");
 }
 
-async function autoCreateCover() {
+function handleCoverSelection() {
   const title = document.getElementById("inputTitle").value.trim();
   const subtitle = document.getElementById("inputSubtitle").value.trim();
   const date = document.getElementById("inputDate").value.trim();
 
   if (!title || !subtitle || !date) {
+    setStatus("Please fill all fields");
     return;
   }
 
-  if (!userImageBase64) {
+  if (selectedCover === 1) {
+    createCoverWithImage();
+  } else {
+    createDocumentWithoutCover(title, subtitle, date);
+  }
+}
+
+function createDocumentWithoutCover(title, subtitle, date) {
+  setStatus("Creating document...");
+
+  Word.run(async (context) => {
+    const body = context.document.body;
+    const firstPara = body.paragraphs.getFirst();
+    const insertPoint = firstPara.getRange("start");
+
+    const titlePara = insertPoint.insertParagraph(title, "after");
+    titlePara.style = "Title";
+    titlePara.font.name = "Century Gothic";
+    titlePara.font.size = 40;
+    titlePara.font.bold = true;
+    titlePara.alignment = Word.Alignment.left;
+
+    const subtitlePara = titlePara.getRange("end").insertParagraph(subtitle, "after");
+    subtitlePara.font.name = "Century Gothic";
+    subtitlePara.font.size = 24;
+    subtitlePara.alignment = Word.Alignment.left;
+
+    const datePara = subtitlePara.getRange("end").insertParagraph(date, "after");
+    datePara.font.name = "Century Gothic";
+    datePara.font.size = 16;
+    datePara.font.color = "#6c757d";
+    datePara.alignment = Word.Alignment.left;
+
+    await context.sync();
+  }).then(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ cover: "none" }));
+    showMainContent();
+    setStatus("Document created!");
+  }).catch((error) => {
+    console.error("createDocumentWithoutCover error:", error);
+    setStatus("Error creating document");
+  });
+}
+
+function createCoverWithImage() {
+  const title = document.getElementById("inputTitle").value.trim();
+  const subtitle = document.getElementById("inputSubtitle").value.trim();
+  const date = document.getElementById("inputDate").value.trim();
+
+  if (!title || !subtitle || !date) {
+    setStatus("Please fill all fields");
     return;
   }
 
   setStatus("Creating cover...");
 
-  try {
-    await Word.run(async (context) => {
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
+  img.onload = function () {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    const imgBase64 = canvas.toDataURL("image/png").split(",")[1];
+
+    Word.run(async (context) => {
       const body = context.document.body;
       const section = context.document.sections.getFirst();
       section.load("pageWidth, pageHeight");
@@ -71,14 +126,6 @@ async function autoCreateCover() {
 
       const firstPara = body.paragraphs.getFirst();
       const insertPoint = firstPara.getRange("start");
-
-      const imgBase64 = userImageBase64.split(",")[1];
-      const img = insertPoint.insertInlinePictureFromBase64(imgBase64, "before");
-      img.width = pageWidth;
-      img.height = pageHeight;
-      img.lockAspectRatio = false;
-
-      await context.sync();
 
       const titlePara = insertPoint.insertParagraph(title, "after");
       titlePara.style = "Title";
@@ -98,35 +145,36 @@ async function autoCreateCover() {
       datePara.font.color = "#6c757d";
       datePara.alignment = Word.Alignment.left;
 
+      const textEnd = datePara.getRange("end");
+
+      const imgInsert = textEnd.insertInlinePictureFromBase64(imgBase64, "after");
+      imgInsert.width = pageWidth;
+      imgInsert.height = pageHeight;
+      imgInsert.lockAspectRatio = false;
+
       await context.sync();
+    }).then(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cover: "1" }));
+      showMainContent();
+      setStatus("Cover created!");
+    }).catch((error) => {
+      console.error("createCoverWithImage error:", error);
+      setStatus("Error creating cover");
     });
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ cover: "custom" })
-    );
-
-    showMainContent();
-    setStatus("Cover created!");
-  } catch (error) {
-    console.error("createCover error:", error);
-    setStatus("Error: " + error.message);
-  }
-}
-
-function skipCover() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ cover: "none" }));
-  showMainContent();
+  };
+  img.onerror = function () {
+    setStatus("Error loading cover image");
+  };
+  img.src = "assets/cover1.png";
 }
 
 function resetSetup() {
   localStorage.removeItem(STORAGE_KEY);
-  userImageBase64 = null;
+  selectedCover = null;
   document.getElementById("inputTitle").value = "";
   document.getElementById("inputSubtitle").value = "";
   document.getElementById("inputDate").value = "";
-  document.getElementById("userImageInput").value = "";
-  document.getElementById("imageName").textContent = "";
+  document.querySelectorAll(".cover-thumb").forEach((el) => el.classList.remove("selected"));
   document.getElementById("mainContent").classList.remove("open");
   showSetupDialog();
 }
