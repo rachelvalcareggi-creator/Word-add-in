@@ -46,11 +46,10 @@
           <FunctionFile resid="Commands.Url" />
 
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <!-- Custom tab — appears as its own tab in the Word ribbon -->
-            <CustomTab id="MyToolsTab">
-              <Label resid="TabLabel" />
 
-              <Group id="CommandsGroup">
+            <!-- ── HOME TAB: adds a group with all 3 buttons ── -->
+            <OfficeTab id="TabHome">
+              <Group id="HomeTabGroup">
                 <Label resid="CommandsGroup.Label" />
                 <Icon>
                   <bt:Image size="16" resid="Icon.16x16" />
@@ -58,8 +57,7 @@
                   <bt:Image size="80" resid="Icon.80x80" />
                 </Icon>
 
-                <!-- Button 1: Open Style Pane -->
-                <Control xsi:type="Button" id="OpenStylePane">
+                <Control xsi:type="Button" id="HomeOpenStylePane">
                   <Label resid="OpenStylePane.Label" />
                   <Supertip>
                     <Title resid="OpenStylePane.Label" />
@@ -76,8 +74,7 @@
                   </Action>
                 </Control>
 
-                <!-- Button 2: Insert Landscape Page -->
-                <Control xsi:type="Button" id="InsertLandscapePage">
+                <Control xsi:type="Button" id="HomeInsertLandscapePage">
                   <Label resid="InsertLandscape.Label" />
                   <Supertip>
                     <Title resid="InsertLandscape.Label" />
@@ -93,8 +90,71 @@
                   </Action>
                 </Control>
 
-                <!-- Button 3: Insert Table -->
-                <Control xsi:type="Button" id="InsertTable">
+                <Control xsi:type="Button" id="HomeInsertTable">
+                  <Label resid="InsertTable.Label" />
+                  <Supertip>
+                    <Title resid="InsertTable.Label" />
+                    <Description resid="InsertTable.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>insertTable</FunctionName>
+                  </Action>
+                </Control>
+
+              </Group>
+            </OfficeTab>
+
+            <!-- ── CUSTOM TAB: your dedicated "My Tools" tab ── -->
+            <CustomTab id="MyToolsTab">
+              <Label resid="TabLabel" />
+
+              <Group id="CustomTabGroup">
+                <Label resid="CommandsGroup.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+
+                <Control xsi:type="Button" id="CustomOpenStylePane">
+                  <Label resid="OpenStylePane.Label" />
+                  <Supertip>
+                    <Title resid="OpenStylePane.Label" />
+                    <Description resid="OpenStylePane.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>StylePane</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url" />
+                  </Action>
+                </Control>
+
+                <Control xsi:type="Button" id="CustomInsertLandscapePage">
+                  <Label resid="InsertLandscape.Label" />
+                  <Supertip>
+                    <Title resid="InsertLandscape.Label" />
+                    <Description resid="InsertLandscape.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>insertLandscapePage</FunctionName>
+                  </Action>
+                </Control>
+
+                <Control xsi:type="Button" id="CustomInsertTable">
                   <Label resid="InsertTable.Label" />
                   <Supertip>
                     <Title resid="InsertTable.Label" />
@@ -112,6 +172,7 @@
 
               </Group>
             </CustomTab>
+
           </ExtensionPoint>
         </DesktopFormFactor>
 
@@ -133,13 +194,13 @@
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with your add-in!" />
         <bt:String id="TabLabel" DefaultValue="My Tools" />
-        <bt:String id="CommandsGroup.Label" DefaultValue="Document Tools" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="My Client Tools" />
         <bt:String id="OpenStylePane.Label" DefaultValue="Style Pane" />
         <bt:String id="InsertLandscape.Label" DefaultValue="Landscape Page" />
         <bt:String id="InsertTable.Label" DefaultValue="Insert Table" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Your add-in is loaded. Visit the My Tools tab to get started." />
+        <bt:String id="GetStarted.Description" DefaultValue="Your add-in is loaded. Your tools appear in the Home tab and the My Tools tab." />
         <bt:String id="OpenStylePane.Tooltip" DefaultValue="Open the Style Pane to apply custom styles." />
         <bt:String id="InsertLandscape.Tooltip" DefaultValue="Insert a new landscape-oriented page at the cursor." />
         <bt:String id="InsertTable.Tooltip" DefaultValue="Insert a formatted table at the cursor position." />
