@@ -143,3 +143,8 @@ const HEADERS = ["Column 1", "Column 2", "Column 3"];
 1. Add `<Control>` in `manifest.xml` with `ExecuteFunction` action
 2. Create function in `commands.js` matching `<FunctionName>`
 3. Register in `Office.actions.associate()`
+
+## Git Workflow
+
+- **Mai commit/push automatici**: non eseguire mai commit o push senza esplicita richiesta
+- **Esecuzione esplicita**: quando l'utente richiede esplicitamente un commit/push, eseguirlo solo per quella volta specifica; l'autorizzazione non si applica automaticamente alle operazioni successive
