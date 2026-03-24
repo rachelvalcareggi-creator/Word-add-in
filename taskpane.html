@@ -14,6 +14,162 @@
       color: #212529;
       padding: 16px;
     }
+
+    /* ── DIALOG OVERLAY ── */
+    #setupOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    #setupOverlay.open { display: flex; }
+
+    #setupDialog {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    #setupDialog h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #4F46E5;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6c757d;
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #e0e7ff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #6366f1;
+    }
+
+    .cover-section {
+      margin-bottom: 20px;
+    }
+    .cover-section label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+    .cover-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .cover-thumb {
+      width: 80px;
+      height: 100px;
+      border: 2px solid #e0e7ff;
+      border-radius: 8px;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .cover-thumb:hover {
+      border-color: #6366f1;
+      transform: scale(1.05);
+    }
+    .cover-thumb.selected {
+      border-color: #4F46E5;
+      box-shadow: 0 0 0 2px #4F46E5;
+    }
+    .cover-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cover-thumb.placeholder {
+      background: #f0f0f0;
+      font-size: 10px;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    #userImageSection {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      text-align: center;
+    }
+    #userImageSection label {
+      display: block;
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 8px;
+    }
+    #userImageSection input {
+      font-size: 12px;
+    }
+
+    .dialog-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .dialog-buttons button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #btnNoCover {
+      background: white;
+      border: 1.5px solid #e0e7ff;
+      color: #6c757d;
+    }
+    #btnNoCover:hover { background: #f8f9fa; }
+    #btnCreateCover {
+      background: #4F46E5;
+      border: none;
+      color: white;
+    }
+    #btnCreateCover:hover { background: #4338ca; }
+    #btnCreateCover:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* ── MAIN CONTENT ── */
+    #mainContent { display: none; }
+    #mainContent.open { display: block; }
+
     h2 {
       font-size: 16px;
       font-weight: 700;
@@ -48,49 +204,12 @@
       transition: background 0.15s, border-color 0.15s;
     }
     .menu-btn:hover { background: #eef2ff; border-color: #6366f1; color: #4F46E5; }
-    .menu-btn .arrow {
-      transition: transform 0.2s;
-      font-size: 10px;
-    }
-    .menu-btn.active .arrow { transform: rotate(180deg); }
     .menu-btn .preview {
       display: block;
       font-weight: 400;
       font-size: 11px;
       color: #9ca3af;
       margin-top: 2px;
-    }
-    .style-dropdown {
-      display: none;
-      background: white;
-      border: 1.5px solid #e0e7ff;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-    .style-dropdown.open { display: block; }
-    .dropdown-item {
-      display: block;
-      width: 100%;
-      padding: 10px 14px;
-      border: none;
-      border-bottom: 1px solid #f0f0f0;
-      background: white;
-      color: #374151;
-      font-size: 12px;
-      text-align: left;
-      cursor: pointer;
-    }
-    .dropdown-item:last-child { border-bottom: none; }
-    .dropdown-item:hover { background: #eef2ff; color: #4F46E5; }
-    .dropdown-section {
-      padding: 6px 14px;
-      background: #f8f9fa;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #6c757d;
-      letter-spacing: 0.05em;
     }
     .divider { border: none; border-top: 1px solid #e9ecef; margin: 16px 0; }
     #status {
@@ -100,37 +219,82 @@
       min-height: 18px;
       text-align: center;
     }
-    .loading {
-      padding: 10px 14px;
-      font-size: 12px;
-      color: #6c757d;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
-  <h2>🎨 Rachele Tools</h2>
 
-  <div class="section-title">Headings</div>
-  <button class="menu-btn" onclick="applyStyle('Heading 1')">Heading 1</button>
-  <button class="menu-btn" onclick="applyStyle('Heading 2')">Heading 2</button>
-  <button class="menu-btn" onclick="applyStyle('Heading 3')">Heading 3</button>
-  <button class="menu-btn" onclick="applyStyle('Normal')">Body Text</button>
+  <!-- ── SETUP DIALOG ── -->
+  <div id="setupOverlay">
+    <div id="setupDialog">
+      <h2>Cover Page Setup</h2>
 
-  <hr class="divider" />
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="inputTitle" placeholder="Enter title..." />
+      </div>
 
-  <div class="section-title">Insert</div>
-  <button class="menu-btn" onclick="insertLandscapePage()">
-    Landscape Page <span class="preview">Insert landscape-oriented page</span>
-  </button>
+      <div class="form-group">
+        <label>Subtitle</label>
+        <input type="text" id="inputSubtitle" placeholder="Enter subtitle..." />
+      </div>
 
-  <hr class="divider" />
+      <div class="form-group">
+        <label>Date</label>
+        <input type="text" id="inputDate" placeholder="Enter date..." />
+      </div>
 
-  <div class="section-title">Tables</div>
-  <button class="menu-btn" onclick="insertTable()">
-    Insert Table <span class="preview">Insert 4x3 formatted table</span>
-  </button>
+      <div class="cover-section">
+        <label>Select Cover</label>
+        <div class="cover-options">
+          <div class="cover-thumb" data-cover="1" onclick="selectCover(1)">
+            <img src="assets/cover1.png" alt="Cover 1" />
+          </div>
+          <div class="cover-thumb" data-cover="2" onclick="selectCover(2)">
+            <img src="assets/cover2.png" alt="Cover 2" />
+          </div>
+          <div class="cover-thumb placeholder" data-cover="3" onclick="selectCover(3)">
+            <span>Upload<br>Your Image</span>
+          </div>
+        </div>
+        <div id="userImageSection">
+          <label>Choose your image</label>
+          <input type="file" id="userImageInput" accept="image/*" onchange="previewUserImage(this)" />
+        </div>
+      </div>
 
-  <p id="status"></p>
+      <div class="dialog-buttons">
+        <button id="btnNoCover" onclick="skipCover()">No Cover</button>
+        <button id="btnCreateCover" onclick="createCover()">Create Cover</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div id="mainContent">
+    <h2>Rachele Tools</h2>
+
+    <div class="section-title">Headings</div>
+    <button class="menu-btn" onclick="applyStyle('Heading 1')">Heading 1</button>
+    <button class="menu-btn" onclick="applyStyle('Heading 2')">Heading 2</button>
+    <button class="menu-btn" onclick="applyStyle('Heading 3')">Heading 3</button>
+    <button class="menu-btn" onclick="applyStyle('Normal')">Body Text</button>
+
+    <hr class="divider" />
+
+    <div class="section-title">Insert</div>
+    <button class="menu-btn" onclick="insertLandscapePage()">
+      Landscape Page <span class="preview">Insert landscape-oriented page</span>
+    </button>
+
+    <hr class="divider" />
+
+    <div class="section-title">Tables</div>
+    <button class="menu-btn" onclick="insertTable()">
+      Insert Table <span class="preview">Insert 4x3 formatted table</span>
+    </button>
+
+    <p id="status"></p>
+  </div>
+
 </body>
 </html>
