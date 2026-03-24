@@ -88,13 +88,9 @@ async function createCover() {
     let imageBase64 = null;
 
     if (selectedCover === 3 && userImageBase64) {
-      imageBase64 = userImageBase64.split(",")[1];
+      imageBase64 = userImageBase64;
     } else {
-      const imgUrl = `https://rachelvalcareggi-creator.github.io/Word-add-in/assets/cover${selectedCover}.png`;
-      const response = await fetch(imgUrl);
-      if (!response.ok) throw new Error("Failed to fetch image");
-      const blob = await response.blob();
-      imageBase64 = await blobToBase64(blob);
+      imageBase64 = await loadImageAsBase64(`assets/cover${selectedCover}.png`);
     }
 
     await Word.run(async (context) => {
@@ -109,7 +105,8 @@ async function createCover() {
       const firstPara = body.paragraphs.getFirst();
       const insertPoint = firstPara.getRange("start");
 
-      const img = insertPoint.insertInlinePictureFromBase64(imageBase64, "before");
+      const imgBase64 = imageBase64.split(",")[1];
+      const img = insertPoint.insertInlinePictureFromBase64(imgBase64, "before");
       img.width = pageWidth;
       img.height = pageHeight;
       img.lockAspectRatio = false;
@@ -150,12 +147,27 @@ async function createCover() {
   }
 }
 
-function blobToBase64(blob) {
+function loadImageAsBase64(url) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      try {
+        const dataUrl = canvas.toDataURL("image/png");
+        resolve(dataUrl);
+      } catch (e) {
+        reject(e);
+      }
+    };
+    img.onerror = function (e) {
+      reject(new Error("Failed to load image: " + url));
+    };
+    img.src = url;
   });
 }
 
