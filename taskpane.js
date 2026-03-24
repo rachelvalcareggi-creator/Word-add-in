@@ -21,7 +21,11 @@ function checkSetup() {
 function showSetupDialog() {
   document.getElementById("setupOverlay").classList.add("open");
   document.getElementById("inputDate").value = new Date().toLocaleDateString();
-  selectedCover = null;
+  selectedCover = 0;
+  document.querySelectorAll(".cover-thumb").forEach((el) => {
+    el.classList.remove("selected");
+  });
+  document.querySelector(`[data-cover="0"]`).classList.add("selected");
 }
 
 function showMainContent() {
@@ -39,7 +43,7 @@ function selectCover(num) {
   document.querySelector(`[data-cover="${num}"]`).classList.add("selected");
 }
 
-function handleCoverSelection() {
+function handleOk() {
   const title = document.getElementById("inputTitle").value.trim();
   const subtitle = document.getElementById("inputSubtitle").value.trim();
   const date = document.getElementById("inputDate").value.trim();
