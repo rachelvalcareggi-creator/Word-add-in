@@ -82,21 +82,23 @@ async function createCover() {
     return;
   }
 
+  setStatus("Creating cover...");
+
   try {
+    let imageBase64 = null;
+
+    if (selectedCover === 3 && userImageBase64) {
+      imageBase64 = userImageBase64.split(",")[1];
+    } else {
+      const imgUrl = `https://rachelvalcareggi-creator.github.io/Word-add-in/assets/cover${selectedCover}.png`;
+      const response = await fetch(imgUrl);
+      if (!response.ok) throw new Error("Failed to fetch image");
+      const blob = await response.blob();
+      imageBase64 = await blobToBase64(blob);
+    }
+
     await Word.run(async (context) => {
       const body = context.document.body;
-      body.paragraphs.load("items");
-      await context.sync();
-
-      const firstPara = body.paragraphs.items[0];
-      let insertLocation;
-
-      if (firstPara && firstPara.text.trim() === "") {
-        insertLocation = firstPara.getRange("start");
-      } else {
-        insertLocation = body.paragraphs.getFirst().getRange("start");
-      }
-
       const section = context.document.sections.getFirst();
       section.load("pageWidth, pageHeight");
       await context.sync();
@@ -104,38 +106,17 @@ async function createCover() {
       const pageWidth = section.pageWidth;
       const pageHeight = section.pageHeight;
 
-      const table = insertLocation.insertTable(1, 1);
-      table.styleBuiltIn = Word.BuiltInStyleName.table.none;
-      table.enableBorders = false;
-      const cell = table.getCell(0, 0);
-      cell.width = pageWidth;
+      const firstPara = body.paragraphs.getFirst();
+      const insertPoint = firstPara.getRange("start");
 
-      if (selectedCover === 3 && userImageBase64) {
-        const base64Data = userImageBase64.split(",")[1];
-        const img = cell.body.insertInlinePictureFromBase64(base64Data, 0);
-        img.width = pageWidth;
-        img.height = pageHeight;
-        img.lockAspectRatio = false;
-      } else {
-        const imgUrl = `https://rachelvalcareggi-creator.github.io/Word-add-in/assets/cover${selectedCover}.png`;
-        const response = await fetch(imgUrl);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        await new Promise((resolve) => {
-          reader.onload = async (e) => {
-            const base64Data = e.target.result.split(",")[1];
-            const img = cell.body.insertInlinePictureFromBase64(base64Data, 0);
-            img.width = pageWidth;
-            img.height = pageHeight;
-            img.lockAspectRatio = false;
-            await context.sync();
-            resolve();
-          };
-        });
-      }
+      const img = insertPoint.insertInlinePictureFromBase64(imageBase64, "before");
+      img.width = pageWidth;
+      img.height = pageHeight;
+      img.lockAspectRatio = false;
 
-      const titlePara = cell.body.insertParagraph(title, "end");
+      await context.sync();
+
+      const titlePara = insertPoint.insertParagraph(title, "after");
       titlePara.style = "Title";
       titlePara.font.name = "Century Gothic";
       titlePara.font.size = 40;
@@ -165,8 +146,17 @@ async function createCover() {
     setStatus("Cover created!");
   } catch (error) {
     console.error("createCover error:", error);
-    setStatus("Error creating cover");
+    setStatus("Error: " + error.message);
   }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 async function applyStyle(styleName) {
