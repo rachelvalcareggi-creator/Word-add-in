@@ -97,16 +97,23 @@ async function createCover() {
         insertLocation = body.paragraphs.getFirst().getRange("start");
       }
 
+      const section = context.document.sections.getFirst();
+      section.load("pageWidth, pageHeight");
+      await context.sync();
+
+      const pageWidth = section.pageWidth;
+      const pageHeight = section.pageHeight;
+
       if (selectedCover === 3 && userImageBase64) {
         const base64Data = userImageBase64.split(",")[1];
         const img = insertLocation.insertInlinePictureFromBase64(base64Data, "before");
-        img.width = 5040;
-        img.height = 6600;
+        img.width = pageWidth;
+        img.height = pageHeight;
         img.lockAspectRatio = false;
         insertLocation = img.getRange("end");
         insertLocation.insertParagraph("", "after");
       } else {
-        const imgUrl = `https://rachelevalcareggi-creator.github.io/Word-add-in/assets/cover${selectedCover}.png`;
+        const imgUrl = `https://rachelvalcareggi-creator.github.io/Word-add-in/assets/cover${selectedCover}.png`;
         const response = await fetch(imgUrl);
         const blob = await response.blob();
         const reader = new FileReader();
@@ -115,8 +122,8 @@ async function createCover() {
           reader.onload = async (e) => {
             const base64Data = e.target.result.split(",")[1];
             const img = insertLocation.insertInlinePictureFromBase64(base64Data, "before");
-            img.width = 5040;
-            img.height = 6600;
+            img.width = pageWidth;
+            img.height = pageHeight;
             img.lockAspectRatio = false;
             insertLocation = img.getRange("end");
             insertLocation.insertParagraph("", "after");
