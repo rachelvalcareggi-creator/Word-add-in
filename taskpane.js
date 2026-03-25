@@ -249,6 +249,16 @@ async function applyStyle(styleName) {
         para.font.nameAscii = "Century Gothic";
       });
 
+      if (styleName.toLowerCase().includes("bullet")) {
+        paragraphs.items.forEach((para) => {
+          para.listFormat.apply("bullet");
+        });
+      } else if (styleName.toLowerCase().includes("number")) {
+        paragraphs.items.forEach((para) => {
+          para.listFormat.apply("numbering");
+        });
+      }
+
       await context.sync();
       setStatus(`Applied "${styleName}"`);
     });
