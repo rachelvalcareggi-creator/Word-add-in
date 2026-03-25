@@ -398,20 +398,23 @@ async function applyShadingColor(color) {
       }
 
       const lastTable = tables.items[tables.items.length - 1];
-      lastTable.load("rows");
+      lastTable.load(["rows/cells", "rows/cells/shadingColor"]);
       await context.sync();
 
-      for (let rowIdx = 0; rowIdx < lastTable.rows.items.length; rowIdx++) {
-        const row = lastTable.rows.items[rowIdx];
-        row.load("cells");
+      for (const row of lastTable.rows.items) {
+        row.load(["cells", "cells/shadingColor"]);
         await context.sync();
 
-        for (let cellIdx = 0; cellIdx < row.cells.items.length; cellIdx++) {
-          const cell = row.cells.items[cellIdx];
-          if (color === "no-fill") {
-            cell.shadingColor = "NoFill";
-          } else {
-            cell.shadingColor = color;
+        if (row.cells && row.cells.items) {
+          for (const cell of row.cells.items) {
+            cell.load("shadingColor");
+            await context.sync();
+
+            if (color === "no-fill") {
+              cell.shadingColor = "NoFill";
+            } else {
+              cell.shadingColor = color;
+            }
           }
         }
       }
