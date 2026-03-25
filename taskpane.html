@@ -453,6 +453,111 @@
       color: #4F46E5;
       min-height: 20px;
     }
+
+    /* ── INSERT PAGE DIALOG ── */
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .dialog-overlay.open {
+      display: flex;
+    }
+    .dialog-container {
+      background: white;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .dialog-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    .dialog-close {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      color: #6c757d;
+      border-radius: 4px;
+    }
+    .dialog-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .dialog-body {
+      padding: 20px;
+    }
+    .dialog-body p {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      color: #374151;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+    }
+    .radio-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #4F46E5;
+    }
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 16px 20px;
+      border-top: 1px solid #e9ecef;
+      background: #f9fafb;
+    }
+    .dialog-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .dialog-btn-cancel {
+      background: white;
+      border: 1px solid #d1d5db;
+      color: #374151;
+    }
+    .dialog-btn-cancel:hover {
+      background: #f3f4f6;
+    }
+    .dialog-btn-primary {
+      background: #4F46E5;
+      border: 1px solid #4F46E5;
+      color: white;
+    }
+    .dialog-btn-primary:hover {
+      background: #4338ca;
+    }
   </style>
 </head>
 <body>
@@ -641,12 +746,12 @@
   <!-- ── TAB LAYOUTS ── -->
   <div id="tab-layouts" class="tab-content">
     <div class="section-title">A4 Sizes</div>
-    <button class="menu-btn" onclick="insertPage('landscape')">Insert Landscape Page</button>
-    <button class="menu-btn" onclick="insertPage('portrait')">Insert Portrait Page</button>
+    <button class="menu-btn" onclick="showInsertPageDialog('landscape')">Insert Landscape Page</button>
+    <button class="menu-btn" onclick="showInsertPageDialog('portrait')">Insert Portrait Page</button>
 
     <div class="section-title">A3 Sizes</div>
-    <button class="menu-btn" onclick="insertPage('a3-landscape')">Insert A3 Landscape</button>
-    <button class="menu-btn" onclick="insertPage('a3-portrait')">Insert A3 Portrait</button>
+    <button class="menu-btn" onclick="showInsertPageDialog('a3-landscape')">Insert A3 Landscape</button>
+    <button class="menu-btn" onclick="showInsertPageDialog('a3-portrait')">Insert A3 Portrait</button>
   </div>
 
   <p id="status"></p>
@@ -657,6 +762,32 @@
       <button id="tableGridClose" onclick="hideTableGrid()">&times;</button>
       <div id="tableGrid"></div>
       <div id="tableGridCounter"></div>
+    </div>
+  </div>
+
+  <!-- ── INSERT PAGE DIALOG ── -->
+  <div id="insertPageDialog" class="dialog-overlay">
+    <div class="dialog-container">
+      <div class="dialog-header">
+        <h3>Insert Page</h3>
+        <button class="dialog-close" onclick="hideInsertPageDialog()">×</button>
+      </div>
+      <div class="dialog-body">
+        <input type="hidden" id="insertPageType" value="">
+        <p>Where do you want to insert?</p>
+        <label class="radio-option">
+          <input type="radio" name="insertLocation" id="radioEnd" value="end">
+          At the end of document
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="insertLocation" id="radioCursor" value="cursor" checked>
+          At cursor position
+        </label>
+      </div>
+      <div class="dialog-footer">
+        <button class="dialog-btn dialog-btn-cancel" onclick="hideInsertPageDialog()">Cancel</button>
+        <button class="dialog-btn dialog-btn-primary" onclick="confirmInsertPage()">Insert</button>
+      </div>
     </div>
   </div>
 

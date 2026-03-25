@@ -499,56 +499,100 @@ async function applyBorders(borderType) {
 }
 
 /* ── LAYOUTS ── */
-async function insertPage(type) {
+function showInsertPageDialog(type) {
+  document.getElementById("insertPageType").value = type;
+  document.getElementById("insertPageDialog").classList.add("open");
+}
+
+function hideInsertPageDialog() {
+  document.getElementById("insertPageDialog").classList.remove("open");
+}
+
+function confirmInsertPage() {
+  const type = document.getElementById("insertPageType").value;
+  const atEnd = document.getElementById("radioEnd").checked;
+  
+  if (atEnd) {
+    insertPageAtEnd(type);
+  } else {
+    insertPageAtCursor(type);
+  }
+  
+  hideInsertPageDialog();
+}
+
+function getPageDimensions(type) {
   const A4_WIDTH = 12240;
   const A4_HEIGHT = 15840;
   const A3_WIDTH = 15840;
   const A3_HEIGHT = 22320;
-
-  let width, height;
-
+  
   switch (type) {
     case "landscape":
-      width = A4_HEIGHT;
-      height = A4_WIDTH;
-      break;
+      return { width: A4_HEIGHT, height: A4_WIDTH };
     case "portrait":
-      width = A4_WIDTH;
-      height = A4_HEIGHT;
-      break;
+      return { width: A4_WIDTH, height: A4_HEIGHT };
     case "a3-landscape":
-      width = A3_HEIGHT;
-      height = A3_WIDTH;
-      break;
+      return { width: A3_HEIGHT, height: A3_WIDTH };
     case "a3-portrait":
-      width = A3_WIDTH;
-      height = A3_HEIGHT;
-      break;
+      return { width: A3_WIDTH, height: A3_HEIGHT };
     default:
-      return;
+      return { width: A4_HEIGHT, height: A4_WIDTH };
   }
+}
 
+async function insertPageAtEnd(type) {
+  const dimensions = getPageDimensions(type);
+  
   try {
     await Word.run(async (context) => {
       const body = context.document.body;
       body.insertBreak(Word.BreakType.sectionNext, Word.InsertLocation.end);
       await context.sync();
-
+      
       const sections = context.document.sections;
       sections.load("items");
       await context.sync();
-
-      const lastSection = sections.items[sections.items.length - 1];
-      lastSection.load("pageSetup");
+      
+      const newSection = sections.items[sections.items.length - 1];
+      newSection.load("pageSetup");
       await context.sync();
-
-      lastSection.pageSetup.pageWidth = width;
-      lastSection.pageSetup.pageHeight = height;
+      
+      newSection.pageSetup.pageWidth = dimensions.width;
+      newSection.pageSetup.pageHeight = dimensions.height;
       await context.sync();
       setStatus("Page inserted!");
     });
   } catch (error) {
-    console.error("insertPage error:", error);
+    console.error("insertPageAtEnd error:", error);
+    setStatus("Could not insert page");
+  }
+}
+
+async function insertPageAtCursor(type) {
+  const dimensions = getPageDimensions(type);
+  
+  try {
+    await Word.run(async (context) => {
+      const selection = context.document.getSelection();
+      selection.insertBreak(Word.BreakType.sectionNext, Word.InsertLocation.after);
+      await context.sync();
+      
+      const sections = context.document.sections;
+      sections.load("items");
+      await context.sync();
+      
+      const newSection = sections.items[sections.items.length - 1];
+      newSection.load("pageSetup");
+      await context.sync();
+      
+      newSection.pageSetup.pageWidth = dimensions.width;
+      newSection.pageSetup.pageHeight = dimensions.height;
+      await context.sync();
+      setStatus("Page inserted!");
+    });
+  } catch (error) {
+    console.error("insertPageAtCursor error:", error);
     setStatus("Could not insert page");
   }
 }
