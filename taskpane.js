@@ -6,7 +6,7 @@ let selectedCover = null;
 
 Office.onReady(() => {
   initTabs();
-  checkSetup();
+  initCoverTab();
 });
 
 /* ── TABS ── */
@@ -19,16 +19,28 @@ function initTabs() {
       document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById("tab-" + tabId).classList.add("active");
+
+      if (tabId === "cover") {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) {
+          showSetupDialog();
+        }
+      }
     });
   });
 }
 
-function checkSetup() {
+function initCoverTab() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
-    showMainContent();
-  } else {
-    showSetupDialog();
+    document.getElementById("setupOverlay").style.display = "none";
+    document.getElementById("tab-cover").innerHTML = `
+      <h2>Cover Page Setup</h2>
+      <button class="menu-btn" onclick="resetSetup()" style="margin: 16px 0; background: #fff3cd; border-color: #ffc107;">
+        Reset Cover Setup
+      </button>
+      <p style="color: #6c757d; font-size: 12px;">Click "Reset Cover Setup" to create a new cover page.</p>
+    `;
   }
 }
 
