@@ -143,24 +143,19 @@ function createCoverWithImage() {
       const firstPara = body.paragraphs.getFirst();
       const insertPoint = firstPara.getRange("start");
 
-      const coverControl = insertPoint.insertContentControl();
-      coverControl.type = "picture";
-      coverControl.title = "Cover Image";
-      coverControl.tag = "coverImage";
-      const coverImg = coverControl.insertInlinePictureFromBase64(imgBase64, "end");
+      const coverImg = insertPoint.insertInlinePictureFromBase64(imgBase64, "after");
       coverImg.width = pageWidth;
       coverImg.height = pageHeight;
-      const coverRange = coverControl.getRange();
 
-      await context.sync();
+      const imgEnd = coverImg.getRange("end");
 
-      const placeholderControl = coverRange.insertContentControl();
-      placeholderControl.type = "picture";
-      placeholderControl.title = "Add Your Image";
-      placeholderControl.tag = "userImagePlaceholder";
-      placeholderControl.placeholderText = "Click here to add your image";
+      const placeholderPara = imgEnd.insertParagraph("", "after");
+      placeholderPara.font.size = 48;
+      const phText = placeholderPara.insertText("Click here to add your image", "end");
 
-      const titleControl = placeholderControl.getRange().insertContentControl();
+      const textStart = placeholderPara.getRange("end");
+
+      const titleControl = textStart.insertContentControl();
       titleControl.type = "richText";
       titleControl.title = "Title";
       titleControl.tag = "title";
