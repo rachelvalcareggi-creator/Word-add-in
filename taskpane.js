@@ -232,17 +232,6 @@ function resetSetup() {
 async function applyStyle(styleName) {
   try {
     await Word.run(async (context) => {
-      const styles = context.document.styles;
-      styles.load("items");
-      await context.sync();
-
-      const styleExists = styles.items.some(s => s.nameLocal === styleName);
-      
-      if (!styleExists) {
-        setStatus(`Style "${styleName}" not available`);
-        return;
-      }
-
       const selection = context.document.getSelection();
       const paragraphs = selection.paragraphs;
       paragraphs.load("items");
