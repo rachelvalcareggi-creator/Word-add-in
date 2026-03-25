@@ -102,7 +102,6 @@ function createDocumentWithoutCover(title, subtitle, date) {
     titleControl.style = "Title";
     titleControl.insertText(title, "end");
     const titleRange = titleControl.getRange();
-    titleRange.font.name = "Century Gothic";
     titleRange.font.size = 40;
     titleRange.font.bold = true;
 
@@ -112,7 +111,6 @@ function createDocumentWithoutCover(title, subtitle, date) {
     subtitleControl.tag = "subtitle";
     subtitleControl.insertText(subtitle, "end");
     const subtitleRange = subtitleControl.getRange();
-    subtitleRange.font.name = "Century Gothic";
     subtitleRange.font.size = 24;
 
     const dateControl = subtitleRange.insertContentControl();
@@ -121,7 +119,6 @@ function createDocumentWithoutCover(title, subtitle, date) {
     dateControl.tag = "date";
     dateControl.insertText(date, "end");
     const dateRange = dateControl.getRange();
-    dateRange.font.name = "Century Gothic";
     dateRange.font.size = 16;
     dateRange.font.color = "#6c757d";
 
@@ -189,7 +186,6 @@ function createCoverWithImage() {
       titleControl.style = "Title";
       titleControl.insertText(title, "end");
       const titleRange = titleControl.getRange();
-      titleRange.font.name = "Century Gothic";
       titleRange.font.size = 40;
       titleRange.font.bold = true;
 
@@ -199,7 +195,6 @@ function createCoverWithImage() {
       subtitleControl.tag = "subtitle";
       subtitleControl.insertText(subtitle, "end");
       const subtitleRange = subtitleControl.getRange();
-      subtitleRange.font.name = "Century Gothic";
       subtitleRange.font.size = 24;
 
       const dateControl = subtitleRange.insertContentControl();
@@ -208,7 +203,6 @@ function createCoverWithImage() {
       dateControl.tag = "date";
       dateControl.insertText(date, "end");
       const dateRange = dateControl.getRange();
-      dateRange.font.name = "Century Gothic";
       dateRange.font.size = 16;
       dateRange.font.color = "#6c757d";
 
@@ -256,8 +250,6 @@ async function applyStyle(styleName) {
 
       paragraphs.items.forEach((para) => {
         para.style = styleName;
-        para.font.name = "Century Gothic";
-        para.font.nameAscii = "Century Gothic";
       });
 
       await context.sync();
@@ -286,12 +278,10 @@ async function insertCustomTable() {
         table.rows.getItem(0).cells.items.forEach((cell) => {
           cell.body.paragraphs.getItem(0).font.color = "white";
           cell.body.paragraphs.getItem(0).font.bold = true;
-          cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
         });
       } else if (headerStyle === "text") {
         table.rows.getItem(0).cells.items.forEach((cell) => {
           cell.body.paragraphs.getItem(0).font.bold = true;
-          cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
         });
       } else if (headerStyle === "bullets") {
         for (let i = 0; i < rows; i++) {
@@ -301,14 +291,6 @@ async function insertCustomTable() {
           cell.body.paragraphs.getItem(0).font.bold = true;
         });
       }
-
-      table.rows.items.forEach((row) => {
-        row.cells.items.forEach((cell) => {
-          if (headerStyle !== "bullets" || table.rows.indexOf(row) !== 0) {
-            cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
-          }
-        });
-      });
 
       await context.sync();
       setStatus("Table inserted!");
