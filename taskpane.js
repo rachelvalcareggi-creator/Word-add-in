@@ -389,11 +389,12 @@ async function applyShadingColor(color) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      selection.load("start, end");
+      const selRange = selection.getRange();
+      selRange.load("start, end");
       await context.sync();
 
-      const selStart = selection.start;
-      const selEnd = selection.end;
+      const selStart = selRange.start;
+      const selEnd = selRange.end;
 
       const tables = context.document.body.tables;
       tables.load("items");
@@ -459,11 +460,12 @@ async function applyBorders(borderType) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      selection.load("start, end");
+      const selRange = selection.getRange();
+      selRange.load("start, end");
       await context.sync();
 
-      const selStart = selection.start;
-      const selEnd = selection.end;
+      const selStart = selRange.start;
+      const selEnd = selRange.end;
 
       const tables = context.document.body.tables;
       tables.load("items");
