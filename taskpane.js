@@ -391,20 +391,16 @@ async function applyShadingColor(color) {
       const selection = context.document.getSelection();
       let cellsToShade = [];
 
-      if (selection.cells && selection.cells.items && selection.cells.items.length > 0) {
-        cellsToShade = selection.cells.items;
-      } else {
-        const tables = selection.tables;
-        tables.load("items");
-        await context.sync();
-
-        if (tables.items.length > 0) {
-          const table = tables.items[0];
-          const firstRow = table.rows.getFirst();
-          firstRow.load("cells");
+      try {
+        if (selection.cells) {
+          selection.cells.load("items");
           await context.sync();
-          cellsToShade = firstRow.cells.items;
+          if (selection.cells.items && selection.cells.items.length > 0) {
+            cellsToShade = selection.cells.items;
+          }
         }
+      } catch (e) {
+        console.log("selection.cells not available");
       }
 
       if (cellsToShade.length === 0) {
@@ -436,20 +432,16 @@ async function applyBorders(borderType) {
       const selection = context.document.getSelection();
       let cellsToBorder = [];
 
-      if (selection.cells && selection.cells.items && selection.cells.items.length > 0) {
-        cellsToBorder = selection.cells.items;
-      } else {
-        const tables = selection.tables;
-        tables.load("items");
-        await context.sync();
-
-        if (tables.items.length > 0) {
-          const table = tables.items[0];
-          const firstRow = table.rows.getFirst();
-          firstRow.load("cells");
+      try {
+        if (selection.cells) {
+          selection.cells.load("items");
           await context.sync();
-          cellsToBorder = firstRow.cells.items;
+          if (selection.cells.items && selection.cells.items.length > 0) {
+            cellsToBorder = selection.cells.items;
+          }
         }
+      } catch (e) {
+        console.log("selection.cells not available");
       }
 
       if (cellsToBorder.length === 0) {
