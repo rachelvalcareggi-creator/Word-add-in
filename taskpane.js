@@ -304,12 +304,16 @@ async function insertCustomTable() {
 
   try {
     await Word.run(async (context) => {
-      const body = context.document.body;
+      const selection = context.document.getSelection();
       const tableData = [];
       for (let i = 0; i < rows; i++) {
-        tableData.push(new Array(cols).fill(""));
+        const row = [];
+        for (let j = 0; j < cols; j++) {
+          row.push("");
+        }
+        tableData.push(row);
       }
-      body.insertTable(tableData, "end");
+      selection.insertTable(tableData, "replace");
       await context.sync();
       setStatus("Table inserted!");
     });
