@@ -359,7 +359,7 @@ async function insertTableFromGrid(rows, cols) {
   try {
     await Word.run(async (context) => {
       console.log("Word.run started");
-      const body = context.document.body;
+      const selection = context.document.getSelection();
       
       const tableData = [];
       for (let i = 0; i < rows; i++) {
@@ -371,7 +371,7 @@ async function insertTableFromGrid(rows, cols) {
       }
       console.log("tableData created:", tableData);
       
-      body.insertTable(rows, cols, "end", tableData);
+      selection.insertTable(rows, cols, "after", tableData);
       console.log("insertTable called");
       await context.sync();
       setStatus("Table inserted!");
