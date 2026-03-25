@@ -3,6 +3,7 @@
 const STORAGE_KEY = "racheleToolsSetup";
 
 let selectedCover = null;
+let selectedTableStyle = "heading";
 
 Office.onReady(() => {
   initTabs();
@@ -251,10 +252,15 @@ async function applyStyle(styleName) {
 }
 
 /* ── TABLES ── */
+function selectTableStyle(style) {
+  selectedTableStyle = style;
+  document.querySelectorAll(".table-style-btn").forEach((btn) => btn.classList.remove("selected"));
+  document.querySelector(`[data-table-style="${style}"]`).classList.add("selected");
+}
+
 async function insertCustomTable() {
   const rows = parseInt(document.getElementById("inputRows").value) || 4;
   const cols = parseInt(document.getElementById("inputColumns").value) || 3;
-  const headerStyle = document.getElementById("headerStyle").value;
 
   try {
     await Word.run(async (context) => {
@@ -262,19 +268,19 @@ async function insertCustomTable() {
       const table = body.insertTable(rows, cols);
       table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
 
-      if (headerStyle === "heading") {
+      if (selectedTableStyle === "heading") {
         table.rows.getItem(0).cells.format.fill = "#4F46E5";
         table.rows.getItem(0).cells.items.forEach((cell) => {
           cell.body.paragraphs.getItem(0).font.color = "white";
           cell.body.paragraphs.getItem(0).font.bold = true;
         });
-      } else if (headerStyle === "text") {
+      } else if (selectedTableStyle === "text") {
         table.rows.getItem(0).cells.items.forEach((cell) => {
           cell.body.paragraphs.getItem(0).font.bold = true;
         });
-      } else if (headerStyle === "bullets") {
+      } else if (selectedTableStyle === "bullets") {
         for (let i = 0; i < rows; i++) {
-          table.getCell(i, 0).body.paragraphs.getItem(0).listFormat.apply("bullet");
+          table.getCell(i, 0).body.paragraphs.getItem(0).listFormat.applyDisc();
         }
         table.rows.getItem(0).cells.items.forEach((cell) => {
           cell.body.paragraphs.getItem(0).font.bold = true;

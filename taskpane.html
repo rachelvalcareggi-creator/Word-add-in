@@ -207,6 +207,11 @@
       color: #9ca3af;
       margin-top: 2px;
     }
+    .menu-btn.selected {
+      background: #eef2ff;
+      border-color: #4F46E5;
+      color: #4F46E5;
+    }
     .divider { border: none; border-top: 1px solid #e9ecef; margin: 16px 0; }
 
     /* ── TABLE INPUTS ── */
@@ -350,15 +355,13 @@
       </div>
     </div>
 
-    <div class="input-group" style="margin-bottom: 16px;">
-      <label>Header Style</label>
-      <select id="headerStyle">
-        <option value="heading">Table Heading</option>
-        <option value="text">Table Text</option>
-        <option value="bullets">Table Bullets</option>
-        <option value="none">None</option>
-      </select>
-    </div>
+    <div class="section-title">Header Style</div>
+    <button class="menu-btn table-style-btn selected" data-table-style="heading" onclick="selectTableStyle('heading')">Table Heading</button>
+    <button class="menu-btn table-style-btn" data-table-style="text" onclick="selectTableStyle('text')">Table Text</button>
+    <button class="menu-btn table-style-btn" data-table-style="bullets" onclick="selectTableStyle('bullets')">Table Bullets</button>
+    <button class="menu-btn table-style-btn" data-table-style="none" onclick="selectTableStyle('none')">None</button>
+
+    <hr class="divider" />
 
     <button class="menu-btn" onclick="insertCustomTable()" style="background: #4F46E5; color: white; border-color: #4F46E5;">
       Insert Table
