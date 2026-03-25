@@ -7,6 +7,7 @@ let selectedCover = null;
 Office.onReady(() => {
   initTabs();
   initCoverTab();
+  initTableGrid();
 });
 
 /* ── TABS ── */
@@ -298,10 +299,60 @@ async function applyTableStyle(style) {
   }
 }
 
-async function insertCustomTable() {
-  const rows = parseInt(document.getElementById("inputRows").value) || 4;
-  const cols = parseInt(document.getElementById("inputColumns").value) || 3;
+/* ── TABLE GRID PICKER ── */
+let currentTableSize = { rows: 0, cols: 0 };
 
+function initTableGrid() {
+  const grid = document.getElementById("tableGrid");
+  grid.innerHTML = "";
+  
+  for (let row = 0; row < 10; row++) {
+    for (let col = 0; col < 10; col++) {
+      const cell = document.createElement("div");
+      cell.className = "grid-cell";
+      cell.dataset.row = row + 1;
+      cell.dataset.col = col + 1;
+      cell.addEventListener("mouseenter", function() {
+        updateTableGridPreview(row + 1, col + 1);
+      });
+      cell.addEventListener("click", function() {
+        insertTableFromGrid(row + 1, col + 1);
+      });
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function showTableGrid() {
+  initTableGrid();
+  document.getElementById("tableGridOverlay").classList.add("open");
+  document.getElementById("tableGridCounter").textContent = "";
+}
+
+function hideTableGrid(event) {
+  if (event && event.target.id !== "tableGridOverlay") return;
+  document.getElementById("tableGridOverlay").classList.remove("open");
+}
+
+function updateTableGridPreview(rows, cols) {
+  currentTableSize = { rows, cols };
+  document.getElementById("tableGridCounter").textContent = `${rows} × ${cols}`;
+  
+  document.querySelectorAll(".grid-cell").forEach(cell => {
+    const cellRow = parseInt(cell.dataset.row);
+    const cellCol = parseInt(cell.dataset.col);
+    
+    if (cellRow <= rows && cellCol <= cols) {
+      cell.classList.add("selected");
+    } else {
+      cell.classList.remove("selected");
+    }
+  });
+}
+
+async function insertTableFromGrid(rows, cols) {
+  hideTableGrid();
+  
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
@@ -318,7 +369,7 @@ async function insertCustomTable() {
       setStatus("Table inserted!");
     });
   } catch (error) {
-    console.error("insertCustomTable error:", error);
+    console.error("insertTableFromGrid error:", error);
     setStatus("Could not insert table");
   }
 }
