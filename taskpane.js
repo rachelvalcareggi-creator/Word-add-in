@@ -543,6 +543,7 @@ function getPageDimensions(type) {
 
 async function insertPageAtEnd(type) {
   const dimensions = getPageDimensions(type);
+  const isLandscape = type === "landscape" || type === "a3-landscape";
   
   try {
     await Word.run(async (context) => {
@@ -560,6 +561,7 @@ async function insertPageAtEnd(type) {
       
       newSection.pageSetup.pageWidth = dimensions.width;
       newSection.pageSetup.pageHeight = dimensions.height;
+      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
       await context.sync();
       setStatus("Page inserted!");
     });
@@ -571,6 +573,7 @@ async function insertPageAtEnd(type) {
 
 async function insertPageAtCursor(type) {
   const dimensions = getPageDimensions(type);
+  const isLandscape = type === "landscape" || type === "a3-landscape";
   
   try {
     await Word.run(async (context) => {
@@ -588,6 +591,7 @@ async function insertPageAtCursor(type) {
       
       newSection.pageSetup.pageWidth = dimensions.width;
       newSection.pageSetup.pageHeight = dimensions.height;
+      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
       await context.sync();
       setStatus("Page inserted!");
     });
