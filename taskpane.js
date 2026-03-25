@@ -3,7 +3,6 @@
 const STORAGE_KEY = "racheleToolsSetup";
 
 let selectedCover = null;
-let selectedTableStyle = "heading";
 
 Office.onReady(() => {
   initTabs();
@@ -252,10 +251,51 @@ async function applyStyle(styleName) {
 }
 
 /* ── TABLES ── */
-function selectTableStyle(style) {
-  selectedTableStyle = style;
-  document.querySelectorAll(".table-style-btn").forEach((btn) => btn.classList.remove("selected"));
-  document.querySelector(`[data-table-style="${style}"]`).classList.add("selected");
+async function applyTableStyle(style) {
+  try {
+    await Word.run(async (context) => {
+      const selection = context.document.getSelection();
+      const tables = selection.tables;
+      tables.load("items");
+      await context.sync();
+
+      if (tables.items.length === 0) {
+        setStatus("No table selected");
+        return;
+      }
+
+      for (const table of tables.items) {
+        table.load("rows");
+        await context.sync();
+
+        if (style === "heading") {
+          table.rows.getItem(0).cells.format.fill = "#4F46E5";
+          table.rows.getItem(0).cells.items.forEach((cell) => {
+            cell.body.paragraphs.getItem(0).font.color = "white";
+            cell.body.paragraphs.getItem(0).font.bold = true;
+          });
+        } else if (style === "text") {
+          table.rows.getItem(0).cells.items.forEach((cell) => {
+            cell.body.paragraphs.getItem(0).font.bold = true;
+            cell.body.paragraphs.getItem(0).font.color = "black";
+          });
+        } else if (style === "bullets") {
+          const rowCount = table.rows.count;
+          for (let i = 0; i < rowCount; i++) {
+            table.getCell(i, 0).body.paragraphs.getItem(0).listFormat.applyDisc();
+          }
+          table.rows.getItem(0).cells.items.forEach((cell) => {
+            cell.body.paragraphs.getItem(0).font.bold = true;
+          });
+        }
+        await context.sync();
+      }
+      setStatus(`Applied "${style}"`);
+    });
+  } catch (error) {
+    console.error("applyTableStyle error:", error);
+    setStatus("Could not apply table style");
+  }
 }
 
 async function insertCustomTable() {
@@ -265,34 +305,111 @@ async function insertCustomTable() {
   try {
     await Word.run(async (context) => {
       const body = context.document.body;
-      const table = body.insertTable(rows, cols);
-      table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
-
-      if (selectedTableStyle === "heading") {
-        table.rows.getItem(0).cells.format.fill = "#4F46E5";
-        table.rows.getItem(0).cells.items.forEach((cell) => {
-          cell.body.paragraphs.getItem(0).font.color = "white";
-          cell.body.paragraphs.getItem(0).font.bold = true;
-        });
-      } else if (selectedTableStyle === "text") {
-        table.rows.getItem(0).cells.items.forEach((cell) => {
-          cell.body.paragraphs.getItem(0).font.bold = true;
-        });
-      } else if (selectedTableStyle === "bullets") {
-        for (let i = 0; i < rows; i++) {
-          table.getCell(i, 0).body.paragraphs.getItem(0).listFormat.applyDisc();
-        }
-        table.rows.getItem(0).cells.items.forEach((cell) => {
-          cell.body.paragraphs.getItem(0).font.bold = true;
-        });
-      }
-
+      body.insertTable(rows, cols);
       await context.sync();
       setStatus("Table inserted!");
     });
   } catch (error) {
     console.error("insertCustomTable error:", error);
     setStatus("Could not insert table");
+  }
+}
+
+function toggleDropdown(id) {
+  const dropdown = document.getElementById(id);
+  const isOpen = dropdown.classList.contains("open");
+  document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
+  if (!isOpen) {
+    dropdown.classList.add("open");
+  }
+}
+
+async function applyShadingColor(color) {
+  try {
+    await Word.run(async (context) => {
+      const selection = context.document.getSelection();
+      const cells = selection.cells;
+      cells.load("items");
+      await context.sync();
+
+      if (cells.items.length === 0) {
+        setStatus("No cells selected");
+        return;
+      }
+
+      cells.items.forEach((cell) => {
+        if (color === "no-fill") {
+          cell.format.fill = "NoFill";
+        } else {
+          cell.format.fill = color;
+        }
+      });
+
+      await context.sync();
+      document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
+      setStatus("Shading applied");
+    });
+  } catch (error) {
+    console.error("applyShadingColor error:", error);
+    setStatus("Could not apply shading");
+  }
+}
+
+async function applyBorders(borderType) {
+  try {
+    await Word.run(async (context) => {
+      const selection = context.document.getSelection();
+      const cells = selection.cells;
+      cells.load("items");
+      await context.sync();
+
+      if (cells.items.length === 0) {
+        setStatus("No cells selected");
+        return;
+      }
+
+      cells.items.forEach((cell) => {
+        const borders = cell.format.borders;
+        if (borderType === "all") {
+          borders.top.visible = !borders.top.visible;
+          borders.bottom.visible = !borders.bottom.visible;
+          borders.left.visible = !borders.left.visible;
+          borders.right.visible = !borders.right.visible;
+        } else if (borderType === "outside") {
+          borders.top.visible = !borders.top.visible;
+          borders.bottom.visible = !borders.bottom.visible;
+          borders.left.visible = !borders.left.visible;
+          borders.right.visible = !borders.right.visible;
+          borders.insideHorizontal.visible = false;
+          borders.insideVertical.visible = false;
+        } else if (borderType === "inside") {
+          borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
+          borders.insideVertical.visible = !borders.insideVertical.visible;
+        } else if (borderType === "top") {
+          borders.top.visible = !borders.top.visible;
+        } else if (borderType === "bottom") {
+          borders.bottom.visible = !borders.bottom.visible;
+        } else if (borderType === "left") {
+          borders.left.visible = !borders.left.visible;
+        } else if (borderType === "right") {
+          borders.right.visible = !borders.right.visible;
+        } else if (borderType === "none") {
+          borders.top.visible = false;
+          borders.bottom.visible = false;
+          borders.left.visible = false;
+          borders.right.visible = false;
+          borders.insideHorizontal.visible = false;
+          borders.insideVertical.visible = false;
+        }
+      });
+
+      await context.sync();
+      document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
+      setStatus("Borders applied");
+    });
+  } catch (error) {
+    console.error("applyBorders error:", error);
+    setStatus("Could not apply borders");
   }
 }
 
