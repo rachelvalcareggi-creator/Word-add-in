@@ -371,8 +371,8 @@ async function insertTableFromGrid(rows, cols) {
       }
       console.log("tableData created:", tableData);
       
-      const result = body.insertTable(tableData);
-      console.log("insertTable result:", result);
+      body.insertTable(rows, cols, "end", tableData);
+      console.log("insertTable called");
       await context.sync();
       setStatus("Table inserted!");
       console.log("Table inserted successfully!");
