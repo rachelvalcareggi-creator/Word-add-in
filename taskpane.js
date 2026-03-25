@@ -305,7 +305,12 @@ async function insertCustomTable() {
   try {
     await Word.run(async (context) => {
       const body = context.document.body;
-      body.insertTable(rows, cols);
+      const tableData = [];
+      for (let i = 0; i < rows; i++) {
+        tableData.push(new Array(cols).fill(""));
+      }
+      const table = body.insertTable(tableData, "end");
+      table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
       await context.sync();
       setStatus("Table inserted!");
     });
