@@ -409,9 +409,9 @@ async function applyShadingColor(color) {
         for (let cellIdx = 0; cellIdx < row.cells.items.length; cellIdx++) {
           const cell = row.cells.items[cellIdx];
           if (color === "no-fill") {
-            cell.format.fill = "NoFill";
+            cell.shadingColor = "NoFill";
           } else {
-            cell.format.fill = color;
+            cell.shadingColor = color;
           }
         }
       }
