@@ -548,7 +548,11 @@ async function insertPageAtEnd(type) {
   try {
     await Word.run(async (context) => {
       const body = context.document.body;
-      body.insertBreak(Word.BreakType.sectionNext, Word.InsertLocation.end);
+      body.paragraphs.load("items");
+      await context.sync();
+      
+      const lastPara = body.paragraphs.items[body.paragraphs.items.length - 1];
+      lastPara.insertBreak(Word.BreakType.sectionNext, "after");
       await context.sync();
       
       const sections = context.document.sections;
@@ -561,7 +565,6 @@ async function insertPageAtEnd(type) {
       
       newSection.pageSetup.pageWidth = dimensions.width;
       newSection.pageSetup.pageHeight = dimensions.height;
-      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
       await context.sync();
       setStatus("Page inserted!");
     });
@@ -578,7 +581,8 @@ async function insertPageAtCursor(type) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      selection.insertBreak(Word.BreakType.sectionNext, Word.InsertLocation.after);
+      selection.collapse("end");
+      selection.insertBreak(Word.BreakType.sectionNext, "after");
       await context.sync();
       
       const sections = context.document.sections;
@@ -591,7 +595,6 @@ async function insertPageAtCursor(type) {
       
       newSection.pageSetup.pageWidth = dimensions.width;
       newSection.pageSetup.pageHeight = dimensions.height;
-      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
       await context.sync();
       setStatus("Page inserted!");
     });
