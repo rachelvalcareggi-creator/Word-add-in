@@ -72,9 +72,9 @@ function createDocumentWithoutCover(title, subtitle, date) {
     titleControl.type = "richText";
     titleControl.title = "Title";
     titleControl.tag = "title";
+    titleControl.style = "Title";
     titleControl.insertText(title, "end");
     const titleRange = titleControl.getRange();
-    titleRange.paragraphFormat.styleBuiltIn = "Title";
     titleRange.font.name = "Century Gothic";
     titleRange.font.size = 40;
     titleRange.font.bold = true;
@@ -159,9 +159,9 @@ function createCoverWithImage() {
       titleControl.type = "richText";
       titleControl.title = "Title";
       titleControl.tag = "title";
+      titleControl.style = "Title";
       titleControl.insertText(title, "end");
       const titleRange = titleControl.getRange();
-      titleRange.paragraphFormat.styleBuiltIn = "Title";
       titleRange.font.name = "Century Gothic";
       titleRange.font.size = 40;
       titleRange.font.bold = true;
