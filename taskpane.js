@@ -565,6 +565,7 @@ async function insertPageAtEnd(type) {
       
       newSection.pageSetup.pageWidth = dimensions.width;
       newSection.pageSetup.pageHeight = dimensions.height;
+      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
       await context.sync();
       setStatus("Page inserted!");
     });
@@ -595,6 +596,7 @@ async function insertPageAtCursor(type) {
       
       newSection.pageSetup.pageWidth = dimensions.width;
       newSection.pageSetup.pageHeight = dimensions.height;
+      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
       await context.sync();
       setStatus("Page inserted!");
     });
