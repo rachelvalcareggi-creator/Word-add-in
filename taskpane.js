@@ -316,13 +316,11 @@ function initTableGrid() {
         updateTableGridPreview(row + 1, col + 1);
       });
       cell.addEventListener("click", function(e) {
-        console.log("Grid cell clicked! Row:", row + 1, "Col:", col + 1);
         insertTableFromGrid(row + 1, col + 1);
       });
       grid.appendChild(cell);
     }
   }
-  console.log("Table grid initialized with", grid.children.length, "cells");
 }
 
 function showTableGrid() {
@@ -353,12 +351,10 @@ function updateTableGridPreview(rows, cols) {
 }
 
 async function insertTableFromGrid(rows, cols) {
-  console.log("insertTableFromGrid called with:", rows, "rows,", cols, "cols");
   hideTableGrid();
   
   try {
     await Word.run(async (context) => {
-      console.log("Word.run started");
       const selection = context.document.getSelection();
       
       const tableData = [];
@@ -369,19 +365,14 @@ async function insertTableFromGrid(rows, cols) {
         }
         tableData.push(row);
       }
-      console.log("tableData created:", tableData);
       
       selection.insertTable(rows, cols, "after", tableData);
-      console.log("insertTable called");
       await context.sync();
       setStatus("Table inserted!");
-      console.log("Table inserted successfully!");
     });
   } catch (error) {
     console.error("insertTableFromGrid error:", error);
-    console.error("Error name:", error.name);
-    console.error("Error message:", error.message);
-    setStatus("Error: " + error.message);
+    setStatus("Could not insert table");
   }
 }
 
@@ -398,16 +389,30 @@ async function applyShadingColor(color) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      const cells = selection.cells;
-      cells.load("items");
-      await context.sync();
+      let cellsToShade = [];
 
-      if (cells.items.length === 0) {
-        setStatus("No cells selected");
+      if (selection.cells && selection.cells.items && selection.cells.items.length > 0) {
+        cellsToShade = selection.cells.items;
+      } else {
+        const tables = selection.tables;
+        tables.load("items");
+        await context.sync();
+
+        if (tables.items.length > 0) {
+          const table = tables.items[0];
+          const firstRow = table.rows.getFirst();
+          firstRow.load("cells");
+          await context.sync();
+          cellsToShade = firstRow.cells.items;
+        }
+      }
+
+      if (cellsToShade.length === 0) {
+        setStatus("Select table cells first");
         return;
       }
 
-      cells.items.forEach((cell) => {
+      cellsToShade.forEach((cell) => {
         if (color === "no-fill") {
           cell.format.fill = "NoFill";
         } else {
@@ -429,16 +434,30 @@ async function applyBorders(borderType) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      const cells = selection.cells;
-      cells.load("items");
-      await context.sync();
+      let cellsToBorder = [];
 
-      if (cells.items.length === 0) {
-        setStatus("No cells selected");
+      if (selection.cells && selection.cells.items && selection.cells.items.length > 0) {
+        cellsToBorder = selection.cells.items;
+      } else {
+        const tables = selection.tables;
+        tables.load("items");
+        await context.sync();
+
+        if (tables.items.length > 0) {
+          const table = tables.items[0];
+          const firstRow = table.rows.getFirst();
+          firstRow.load("cells");
+          await context.sync();
+          cellsToBorder = firstRow.cells.items;
+        }
+      }
+
+      if (cellsToBorder.length === 0) {
+        setStatus("Select table cells first");
         return;
       }
 
-      cells.items.forEach((cell) => {
+      cellsToBorder.forEach((cell) => {
         const borders = cell.format.borders;
         if (borderType === "all") {
           borders.top.visible = !borders.top.visible;
