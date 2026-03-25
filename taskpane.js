@@ -355,7 +355,14 @@ async function insertTableFromGrid(rows, cols) {
   
   try {
     await Word.run(async (context) => {
-      const selection = context.document.getSelection();
+      const body = context.document.body;
+      const paragraphs = body.paragraphs;
+      paragraphs.load("items");
+      await context.sync();
+      
+      const lastPara = paragraphs.items[paragraphs.items.length - 1];
+      const insertPoint = lastPara.getRange("end");
+      
       const tableData = [];
       for (let i = 0; i < rows; i++) {
         const row = [];
@@ -364,7 +371,8 @@ async function insertTableFromGrid(rows, cols) {
         }
         tableData.push(row);
       }
-      selection.insertTable(tableData, "replace");
+      
+      insertPoint.insertTable(tableData, "after");
       await context.sync();
       setStatus("Table inserted!");
     });
