@@ -3,11 +3,25 @@
 const STORAGE_KEY = "racheleToolsSetup";
 
 let selectedCover = null;
-let userImageBase64 = null;
 
 Office.onReady(() => {
+  initTabs();
   checkSetup();
 });
+
+/* ── TABS ── */
+function initTabs() {
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tabId = btn.getAttribute("data-tab");
+      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("tab-" + tabId).classList.add("active");
+    });
+  });
+}
 
 function checkSetup() {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -22,24 +36,25 @@ function showSetupDialog() {
   document.getElementById("setupOverlay").classList.add("open");
   document.getElementById("inputDate").value = new Date().toLocaleDateString();
   selectedCover = 0;
-  document.querySelectorAll(".cover-thumb").forEach((el) => {
-    el.classList.remove("selected");
-  });
+  document.querySelectorAll(".cover-thumb").forEach((el) => el.classList.remove("selected"));
   document.querySelector(`[data-cover="0"]`).classList.add("selected");
 }
 
 function showMainContent() {
-  const overlay = document.getElementById("setupOverlay");
-  overlay.classList.remove("open");
-  overlay.style.display = "none";
-  document.getElementById("mainContent").classList.add("open");
+  document.getElementById("setupOverlay").classList.remove("open");
+  document.getElementById("setupOverlay").style.display = "none";
+  document.getElementById("tab-cover").innerHTML = `
+    <h2>Cover Page Setup</h2>
+    <button class="menu-btn" onclick="resetSetup()" style="margin: 16px 0; background: #fff3cd; border-color: #ffc107;">
+      Reset Cover Setup
+    </button>
+    <p style="color: #6c757d; font-size: 12px;">Click "Reset Cover Setup" to create a new cover page.</p>
+  `;
 }
 
 function selectCover(num) {
   selectedCover = num;
-  document.querySelectorAll(".cover-thumb").forEach((el) => {
-    el.classList.remove("selected");
-  });
+  document.querySelectorAll(".cover-thumb").forEach((el) => el.classList.remove("selected"));
   document.querySelector(`[data-cover="${num}"]`).classList.add("selected");
 }
 
@@ -151,7 +166,7 @@ function createCoverWithImage() {
 
       const placeholderPara = imgEnd.insertParagraph("", "after");
       placeholderPara.font.size = 48;
-      const phText = placeholderPara.insertText("Click here to add your image", "end");
+      placeholderPara.insertText("Click here to add your image", "end");
 
       const textStart = placeholderPara.getRange("end");
 
@@ -204,52 +219,10 @@ function createCoverWithImage() {
 function resetSetup() {
   localStorage.removeItem(STORAGE_KEY);
   selectedCover = null;
-  document.getElementById("inputTitle").value = "";
-  document.getElementById("inputSubtitle").value = "";
-  document.getElementById("inputDate").value = "";
-  document.querySelectorAll(".cover-thumb").forEach((el) => el.classList.remove("selected"));
-  document.getElementById("mainContent").classList.remove("open");
   showSetupDialog();
 }
 
-function addImageToCover() {
-  document.getElementById("coverImageInput").click();
-}
-
-function handleCoverImageUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-
-  setStatus("Adding image...");
-
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const base64 = e.target.result.split(",")[1];
-
-    Word.run(async (context) => {
-      const body = context.document.body;
-      const paragraphs = body.paragraphs;
-      paragraphs.load("items");
-      await context.sync();
-
-      if (paragraphs.items.length > 2) {
-        const insertRange = paragraphs.items[1].getRange("end");
-        const img = insertRange.insertInlinePictureFromBase64(base64, "after");
-        img.width = 5040;
-        img.height = 3360;
-        img.lockAspectRatio = false;
-        await context.sync();
-        setStatus("Image added!");
-      }
-    }).catch((error) => {
-      console.error("handleCoverImageUpload error:", error);
-      setStatus("Error adding image");
-    });
-  };
-  reader.readAsDataURL(file);
-  input.value = "";
-}
-
+/* ── STYLES ── */
 async function applyStyle(styleName) {
   try {
     await Word.run(async (context) => {
@@ -265,7 +238,6 @@ async function applyStyle(styleName) {
       });
 
       await context.sync();
-
       setStatus(`Applied "${styleName}"`);
     });
   } catch (error) {
@@ -274,70 +246,105 @@ async function applyStyle(styleName) {
   }
 }
 
-function setStatus(msg) {
-  const el = document.getElementById("status");
-  if (el) {
-    el.textContent = msg;
-    setTimeout(() => { el.textContent = ""; }, 3000);
-  }
-}
+/* ── TABLES ── */
+async function insertCustomTable() {
+  const rows = parseInt(document.getElementById("inputRows").value) || 4;
+  const cols = parseInt(document.getElementById("inputColumns").value) || 3;
+  const headerStyle = document.getElementById("headerStyle").value;
 
-async function insertLandscapePage() {
-  try {
-    await Word.run(async (context) => {
-      const currentSection = context.document.sections.getFirst();
-      currentSection.load("pageWidth, pageHeight");
-      await context.sync();
-
-      let newWidth = currentSection.pageWidth;
-      let newHeight = currentSection.pageHeight;
-
-      if (newWidth < newHeight) {
-        [newWidth, newHeight] = [newHeight, newWidth];
-      }
-
-      const newSection = context.document.addSection();
-      newSection.pageWidth = newWidth;
-      newSection.pageHeight = newHeight;
-
-      await context.sync();
-      setStatus("Landscape page inserted");
-    });
-  } catch (error) {
-    console.error("insertLandscapePage error:", error);
-    setStatus("Could not insert landscape page");
-  }
-}
-
-async function insertTable() {
   try {
     await Word.run(async (context) => {
       const body = context.document.body;
-      body.insertTable(0, 4, 3);
-      const tables = body.tables;
-      tables.load("items");
-      await context.sync();
+      const table = body.insertTable(rows, cols);
+      table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
 
-      if (tables.items.length > 0) {
-        const table = tables.items[0];
-        table.styleBuiltIn = Word.BuiltInStyleName.table.grid;
-        table.getCell(0, 0).body.paragraphs.getItem(0).text = "Column 1";
-        table.getCell(0, 1).body.paragraphs.getItem(0).text = "Column 2";
-        table.getCell(0, 2).body.paragraphs.getItem(0).text = "Column 3";
-
+      if (headerStyle === "heading") {
         table.rows.getItem(0).cells.format.fill = "#4F46E5";
         table.rows.getItem(0).cells.items.forEach((cell) => {
           cell.body.paragraphs.getItem(0).font.color = "white";
           cell.body.paragraphs.getItem(0).font.bold = true;
           cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
         });
-        await context.sync();
+      } else if (headerStyle === "text") {
+        table.rows.getItem(0).cells.items.forEach((cell) => {
+          cell.body.paragraphs.getItem(0).font.bold = true;
+          cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
+        });
+      } else if (headerStyle === "bullets") {
+        for (let i = 0; i < rows; i++) {
+          table.getCell(i, 0).body.paragraphs.getItem(0).listFormat.apply("bullet");
+        }
+        table.rows.getItem(0).cells.items.forEach((cell) => {
+          cell.body.paragraphs.getItem(0).font.bold = true;
+        });
       }
 
-      setStatus("Table inserted");
+      table.rows.items.forEach((row) => {
+        row.cells.items.forEach((cell) => {
+          if (headerStyle !== "bullets" || table.rows.indexOf(row) !== 0) {
+            cell.body.paragraphs.getItem(0).font.name = "Century Gothic";
+          }
+        });
+      });
+
+      await context.sync();
+      setStatus("Table inserted!");
     });
   } catch (error) {
-    console.error("insertTable error:", error);
+    console.error("insertCustomTable error:", error);
     setStatus("Could not insert table");
+  }
+}
+
+/* ── LAYOUTS ── */
+async function insertPage(type) {
+  const A4_WIDTH = 12240;
+  const A4_HEIGHT = 15840;
+  const A3_WIDTH = 15840;
+  const A3_HEIGHT = 22320;
+
+  let width, height;
+
+  switch (type) {
+    case "landscape":
+      width = A4_HEIGHT;
+      height = A4_WIDTH;
+      break;
+    case "portrait":
+      width = A4_WIDTH;
+      height = A4_HEIGHT;
+      break;
+    case "a3-landscape":
+      width = A3_HEIGHT;
+      height = A3_WIDTH;
+      break;
+    case "a3-portrait":
+      width = A3_WIDTH;
+      height = A3_HEIGHT;
+      break;
+    default:
+      return;
+  }
+
+  try {
+    await Word.run(async (context) => {
+      const newSection = context.document.addSection();
+      newSection.pageWidth = width;
+      newSection.pageHeight = height;
+      await context.sync();
+      setStatus("Page inserted!");
+    });
+  } catch (error) {
+    console.error("insertPage error:", error);
+    setStatus("Could not insert page");
+  }
+}
+
+/* ── UTILS ── */
+function setStatus(msg) {
+  const el = document.getElementById("status");
+  if (el) {
+    el.textContent = msg;
+    setTimeout(() => { el.textContent = ""; }, 3000);
   }
 }
