@@ -388,13 +388,6 @@ function toggleDropdown(id) {
 async function applyShadingColor(color) {
   try {
     await Word.run(async (context) => {
-      const selection = context.document.getSelection();
-      selection.load(["start", "end"]);
-      await context.sync();
-
-      const selStart = selection.start;
-      const selEnd = selection.end;
-
       const tables = context.document.body.tables;
       tables.load("items");
       await context.sync();
@@ -404,50 +397,28 @@ async function applyShadingColor(color) {
         return;
       }
 
-      let shaded = false;
+      const lastTable = tables.items[tables.items.length - 1];
+      lastTable.load("rows");
+      await context.sync();
 
-      for (const table of tables.items) {
-        table.load("rows");
+      for (let rowIdx = 0; rowIdx < lastTable.rows.items.length; rowIdx++) {
+        const row = lastTable.rows.items[rowIdx];
+        row.load("cells");
         await context.sync();
 
-        for (let rowIdx = 0; rowIdx < table.rows.items.length; rowIdx++) {
-          const row = table.rows.items[rowIdx];
-          row.load("cells");
-          await context.sync();
-
-          for (let cellIdx = 0; cellIdx < row.cells.items.length; cellIdx++) {
-            const cell = row.cells.items[cellIdx];
-            cell.body.load("text, paragraphInfo");
-            await context.sync();
-
-            const cellRange = cell.getRange();
-            cellRange.load("start, end");
-            await context.sync();
-
-            const cellStart = cellRange.start;
-            const cellEnd = cellRange.end;
-            const overlaps = cellStart < selEnd && cellEnd > selStart;
-
-            if (overlaps) {
-              if (color === "no-fill") {
-                cell.format.fill = "NoFill";
-              } else {
-                cell.format.fill = color;
-              }
-              shaded = true;
-            }
+        for (let cellIdx = 0; cellIdx < row.cells.items.length; cellIdx++) {
+          const cell = row.cells.items[cellIdx];
+          if (color === "no-fill") {
+            cell.format.fill = "NoFill";
+          } else {
+            cell.format.fill = color;
           }
         }
       }
 
       await context.sync();
       document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-
-      if (shaded) {
-        setStatus("Shading applied");
-      } else {
-        setStatus("Select table cells first");
-      }
+      setStatus("Shading applied to table");
     });
   } catch (error) {
     console.error("applyShadingColor error:", error);
@@ -458,13 +429,6 @@ async function applyShadingColor(color) {
 async function applyBorders(borderType) {
   try {
     await Word.run(async (context) => {
-      const selection = context.document.getSelection();
-      selection.load(["start", "end"]);
-      await context.sync();
-
-      const selStart = selection.start;
-      const selEnd = selection.end;
-
       const tables = context.document.body.tables;
       tables.load("items");
       await context.sync();
@@ -474,79 +438,56 @@ async function applyBorders(borderType) {
         return;
       }
 
-      let bordered = false;
+      const lastTable = tables.items[tables.items.length - 1];
+      lastTable.load("rows");
+      await context.sync();
 
-      for (const table of tables.items) {
-        table.load("rows");
+      for (let rowIdx = 0; rowIdx < lastTable.rows.items.length; rowIdx++) {
+        const row = lastTable.rows.items[rowIdx];
+        row.load("cells");
         await context.sync();
 
-        for (let rowIdx = 0; rowIdx < table.rows.items.length; rowIdx++) {
-          const row = table.rows.items[rowIdx];
-          row.load("cells");
-          await context.sync();
+        for (let cellIdx = 0; cellIdx < row.cells.items.length; cellIdx++) {
+          const cell = row.cells.items[cellIdx];
+          const borders = cell.format.borders;
 
-          for (let cellIdx = 0; cellIdx < row.cells.items.length; cellIdx++) {
-            const cell = row.cells.items[cellIdx];
-            cell.body.load("text, paragraphInfo");
-            await context.sync();
-
-            const cellRange = cell.getRange();
-            cellRange.load("start, end");
-            await context.sync();
-
-            const cellStart = cellRange.start;
-            const cellEnd = cellRange.end;
-            const overlaps = cellStart < selEnd && cellEnd > selStart;
-
-            if (overlaps) {
-              const borders = cell.format.borders;
-
-              if (borderType === "all") {
-                borders.top.visible = !borders.top.visible;
-                borders.bottom.visible = !borders.bottom.visible;
-                borders.left.visible = !borders.left.visible;
-                borders.right.visible = !borders.right.visible;
-              } else if (borderType === "outside") {
-                borders.top.visible = !borders.top.visible;
-                borders.bottom.visible = !borders.bottom.visible;
-                borders.left.visible = !borders.left.visible;
-                borders.right.visible = !borders.right.visible;
-                borders.insideHorizontal.visible = false;
-                borders.insideVertical.visible = false;
-              } else if (borderType === "inside") {
-                borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
-                borders.insideVertical.visible = !borders.insideVertical.visible;
-              } else if (borderType === "top") {
-                borders.top.visible = !borders.top.visible;
-              } else if (borderType === "bottom") {
-                borders.bottom.visible = !borders.bottom.visible;
-              } else if (borderType === "left") {
-                borders.left.visible = !borders.left.visible;
-              } else if (borderType === "right") {
-                borders.right.visible = !borders.right.visible;
-              } else if (borderType === "none") {
-                borders.top.visible = false;
-                borders.bottom.visible = false;
-                borders.left.visible = false;
-                borders.right.visible = false;
-                borders.insideHorizontal.visible = false;
-                borders.insideVertical.visible = false;
-              }
-
-              bordered = true;
-            }
+          if (borderType === "all") {
+            borders.top.visible = !borders.top.visible;
+            borders.bottom.visible = !borders.bottom.visible;
+            borders.left.visible = !borders.left.visible;
+            borders.right.visible = !borders.right.visible;
+          } else if (borderType === "outside") {
+            borders.top.visible = !borders.top.visible;
+            borders.bottom.visible = !borders.bottom.visible;
+            borders.left.visible = !borders.left.visible;
+            borders.right.visible = !borders.right.visible;
+            borders.insideHorizontal.visible = false;
+            borders.insideVertical.visible = false;
+          } else if (borderType === "inside") {
+            borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
+            borders.insideVertical.visible = !borders.insideVertical.visible;
+          } else if (borderType === "top") {
+            borders.top.visible = !borders.top.visible;
+          } else if (borderType === "bottom") {
+            borders.bottom.visible = !borders.bottom.visible;
+          } else if (borderType === "left") {
+            borders.left.visible = !borders.left.visible;
+          } else if (borderType === "right") {
+            borders.right.visible = !borders.right.visible;
+          } else if (borderType === "none") {
+            borders.top.visible = false;
+            borders.bottom.visible = false;
+            borders.left.visible = false;
+            borders.right.visible = false;
+            borders.insideHorizontal.visible = false;
+            borders.insideVertical.visible = false;
           }
         }
       }
 
       await context.sync();
       document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-
-      if (bordered) {
-        setStatus("Borders applied");
-      } else {
-        setStatus("Select table cells first");
-      }
+      setStatus("Borders applied to table");
     });
   } catch (error) {
     console.error("applyBorders error:", error);
