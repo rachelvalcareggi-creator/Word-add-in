@@ -405,7 +405,6 @@ async function applyShadingColor(color) {
       }
 
       let shaded = false;
-      let foundTable = false;
 
       for (const table of tables.items) {
         table.load("rows");
@@ -425,7 +424,11 @@ async function applyShadingColor(color) {
             cellRange.load("start, end");
             await context.sync();
 
-            if (cellRange.start >= selStart && cellRange.end <= selEnd) {
+            const cellStart = cellRange.start;
+            const cellEnd = cellRange.end;
+            const overlaps = cellStart < selEnd && cellEnd > selStart;
+
+            if (overlaps) {
               if (color === "no-fill") {
                 cell.format.fill = "NoFill";
               } else {
@@ -491,7 +494,11 @@ async function applyBorders(borderType) {
             cellRange.load("start, end");
             await context.sync();
 
-            if (cellRange.start >= selStart && cellRange.end <= selEnd) {
+            const cellStart = cellRange.start;
+            const cellEnd = cellRange.end;
+            const overlaps = cellStart < selEnd && cellEnd > selStart;
+
+            if (overlaps) {
               const borders = cell.format.borders;
 
               if (borderType === "all") {
