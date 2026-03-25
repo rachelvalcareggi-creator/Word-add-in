@@ -315,12 +315,14 @@ function initTableGrid() {
       cell.addEventListener("mouseenter", function() {
         updateTableGridPreview(row + 1, col + 1);
       });
-      cell.addEventListener("click", function() {
+      cell.addEventListener("click", function(e) {
+        console.log("Grid cell clicked! Row:", row + 1, "Col:", col + 1);
         insertTableFromGrid(row + 1, col + 1);
       });
       grid.appendChild(cell);
     }
   }
+  console.log("Table grid initialized with", grid.children.length, "cells");
 }
 
 function showTableGrid() {
@@ -351,10 +353,12 @@ function updateTableGridPreview(rows, cols) {
 }
 
 async function insertTableFromGrid(rows, cols) {
+  console.log("insertTableFromGrid called with:", rows, "rows,", cols, "cols");
   hideTableGrid();
   
   try {
     await Word.run(async (context) => {
+      console.log("Word.run started");
       const body = context.document.body;
       
       const tableData = [];
@@ -365,14 +369,19 @@ async function insertTableFromGrid(rows, cols) {
         }
         tableData.push(row);
       }
+      console.log("tableData created:", tableData);
       
-      body.insertTable(tableData);
+      const result = body.insertTable(tableData);
+      console.log("insertTable result:", result);
       await context.sync();
       setStatus("Table inserted!");
+      console.log("Table inserted successfully!");
     });
   } catch (error) {
     console.error("insertTableFromGrid error:", error);
-    setStatus("Could not insert table");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    setStatus("Error: " + error.message);
   }
 }
 
