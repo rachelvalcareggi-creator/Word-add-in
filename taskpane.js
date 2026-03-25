@@ -530,15 +530,20 @@ async function insertPage(type) {
 
   try {
     await Word.run(async (context) => {
+      const body = context.document.body;
+      body.insertBreak(Word.BreakType.sectionNext, Word.InsertLocation.end);
+      await context.sync();
+
       const sections = context.document.sections;
       sections.load("items");
       await context.sync();
 
       const lastSection = sections.items[sections.items.length - 1];
-      const range = lastSection.getRange("end");
-      const newSection = range.insertSection("after");
-      newSection.pageWidth = width;
-      newSection.pageHeight = height;
+      lastSection.load("pageSetup");
+      await context.sync();
+
+      lastSection.pageSetup.pageWidth = width;
+      lastSection.pageSetup.pageHeight = height;
       await context.sync();
       setStatus("Page inserted!");
     });
