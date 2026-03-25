@@ -147,10 +147,10 @@ function createCoverWithImage() {
       coverControl.type = "picture";
       coverControl.title = "Cover Image";
       coverControl.tag = "coverImage";
-      coverControl.insertInlinePictureFromBase64(imgBase64, "end");
+      const coverImg = coverControl.insertInlinePictureFromBase64(imgBase64, "end");
+      coverImg.width = pageWidth;
+      coverImg.height = pageHeight;
       const coverRange = coverControl.getRange();
-      coverRange.inlinePicture.width = pageWidth;
-      coverRange.inlinePicture.height = pageHeight;
 
       await context.sync();
 
