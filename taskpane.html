@@ -614,6 +614,39 @@
       margin-top: 2px;
       word-break: break-all;
     }
+    .about-content {
+      text-align: left;
+      padding: 8px 0;
+    }
+    .about-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0 0 12px 0;
+    }
+    .about-text {
+      font-size: 13px;
+      color: #374151;
+      margin: 0 0 8px 0;
+      line-height: 1.5;
+    }
+    .about-contact {
+      font-size: 13px;
+      color: #374151;
+      margin: 0 0 16px 0;
+      line-height: 1.6;
+    }
+    .about-contact a {
+      color: #4F46E5;
+      text-decoration: none;
+    }
+    .about-contact a:hover {
+      text-decoration: underline;
+    }
+    .about-logo {
+      width: 130px;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -669,6 +702,7 @@
     <button class="tab-btn" data-tab="styles">Styles</button>
     <button class="tab-btn" data-tab="tables">Tables</button>
     <button class="tab-btn" data-tab="layouts">Layouts</button>
+    <button class="tab-btn" data-tab="about">About</button>
   </div>
 
   <!-- ── TAB COVER ── -->
@@ -864,6 +898,24 @@
 
     <div class="section-title">Breaks</div>
     <button class="menu-btn" onclick="insertPageBreak()">Insert Page Break</button>
+    
+    <hr class="divider" />
+    <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
+      🐛 Debug Mode
+    </button>
+  </div>
+
+  <!-- ── TAB ABOUT ── -->
+  <div id="tab-about" class="tab-content">
+    <div class="about-content">
+      <h2 class="about-title">About this template</h2>
+      <p class="about-text">This template was created by UpsideDown Productions:</p>
+      <p class="about-contact">
+        Tel: <a href="tel:+61294114548">+61 (0)2 9411 4548</a><br>
+        <a href="https://www.upsidedown.com.au" target="_blank">www.upsidedown.com.au</a>
+      </p>
+      <img src="assets/LogoUDP.png" alt="UpsideDown Productions Logo" class="about-logo">
+    </div>
     
     <hr class="divider" />
     <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
