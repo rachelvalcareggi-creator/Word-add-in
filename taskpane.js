@@ -246,7 +246,7 @@ async function applyStyle(styleName) {
       setStatus(`Applied "${styleName}"`);
     });
   } catch (error) {
-    console.error("applyStyle error:", error);
+    logDebug(`applyStyle("${styleName}") failed`, error);
     setStatus(`Could not apply "${styleName}"`);
   }
 }
@@ -294,7 +294,7 @@ async function applyTableStyle(style) {
       setStatus(`Applied "${style}"`);
     });
   } catch (error) {
-    console.error("applyTableStyle error:", error);
+    logDebug(`applyTableStyle("${style}") failed`, error);
     setStatus("Could not apply table style");
   }
 }
@@ -371,7 +371,7 @@ async function insertTableFromGrid(rows, cols) {
       setStatus("Table inserted!");
     });
   } catch (error) {
-    console.error("insertTableFromGrid error:", error);
+    logDebug(`insertTableFromGrid(${rows}, ${cols}) failed`, error);
     setStatus("Could not insert table");
   }
 }
@@ -424,7 +424,7 @@ async function applyShadingColor(color) {
       setStatus("Shading applied to table");
     });
   } catch (error) {
-    console.error("applyShadingColor error:", error);
+    logDebug(`applyShadingColor("${color}") failed`, error);
     setStatus("Could not apply shading");
   }
 }
@@ -493,7 +493,7 @@ async function applyBorders(borderType) {
       setStatus("Borders applied to table");
     });
   } catch (error) {
-    console.error("applyBorders error:", error);
+    logDebug(`applyBorders("${borderType}") failed`, error);
     setStatus("Could not apply borders");
   }
 }
@@ -570,7 +570,7 @@ async function insertPageAtEnd(type) {
       setStatus("Page inserted!");
     });
   } catch (error) {
-    console.error("insertPageAtEnd error:", error);
+    logDebug(`insertPageAtEnd("${type}") failed`, error);
     setStatus("Could not insert page");
   }
 }
@@ -601,8 +601,61 @@ async function insertPageAtCursor(type) {
       setStatus("Page inserted!");
     });
   } catch (error) {
-    console.error("insertPageAtCursor error:", error);
+    logDebug(`insertPageAtCursor("${type}") failed`, error);
     setStatus("Could not insert page");
+  }
+}
+
+/* ── DEBUG ── */
+let debugEnabled = false;
+
+function logDebug(message, error = null) {
+  if (!debugEnabled) return;
+  
+  const debugContent = document.getElementById("debugContent");
+  const debugPanel = document.getElementById("debugPanel");
+  
+  const entry = document.createElement("div");
+  entry.className = "debug-entry";
+  
+  const time = new Date().toLocaleTimeString();
+  let details = `<div class="debug-time">[${time}]</div>`;
+  details += `<div class="debug-message">${message}</div>`;
+  
+  if (error) {
+    details += `<div class="debug-details">`;
+    details += `<strong>Error:</strong> ${error.message || error}<br>`;
+    if (error.stack) {
+      const stackLines = error.stack.split("\n").slice(0, 3).join("<br>");
+      details += `<strong>Stack:</strong> ${stackLines}`;
+    }
+    details += `</div>`;
+  }
+  
+  entry.innerHTML = details;
+  debugContent.appendChild(entry);
+  debugPanel.classList.add("visible");
+  debugPanel.scrollTop = debugPanel.scrollHeight;
+}
+
+function clearDebug() {
+  const debugContent = document.getElementById("debugContent");
+  debugContent.innerHTML = "";
+}
+
+function toggleDebug() {
+  debugEnabled = !debugEnabled;
+  const debugPanel = document.getElementById("debugPanel");
+  const btn = document.getElementById("toggleDebug");
+  
+  if (debugEnabled) {
+    debugPanel.classList.add("visible");
+    btn.style.background = "#dc2626";
+    logDebug("Debug mode enabled");
+  } else {
+    debugPanel.classList.remove("visible");
+    btn.style.background = "#6b7280";
+    logDebug("Debug mode disabled");
   }
 }
 

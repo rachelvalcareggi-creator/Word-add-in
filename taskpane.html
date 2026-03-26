@@ -558,6 +558,62 @@
     .dialog-btn-primary:hover {
       background: #4338ca;
     }
+
+    /* ── DEBUG PANEL ── */
+    #debugPanel {
+      border-top: 2px solid #ef4444;
+      background: #fef2f2;
+      font-size: 11px;
+      max-height: 150px;
+      overflow-y: auto;
+      padding: 8px 12px;
+      display: none;
+    }
+    #debugPanel.visible {
+      display: block;
+    }
+    .debug-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: #dc2626;
+      font-size: 12px;
+    }
+    #clearDebug {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      cursor: pointer;
+    }
+    #clearDebug:hover {
+      background: #b91c1c;
+    }
+    .debug-entry {
+      margin-bottom: 6px;
+      padding: 4px 6px;
+      background: white;
+      border-left: 3px solid #dc2626;
+      border-radius: 2px;
+    }
+    .debug-time {
+      color: #6b7280;
+      font-size: 10px;
+    }
+    .debug-message {
+      color: #991b1b;
+      font-weight: 600;
+    }
+    .debug-details {
+      color: #374151;
+      font-size: 10px;
+      margin-top: 2px;
+      word-break: break-all;
+    }
   </style>
 </head>
 <body>
@@ -613,6 +669,11 @@
     <button class="tab-btn" data-tab="tables">Tables</button>
     <button class="tab-btn" data-tab="layouts">Layouts</button>
   </div>
+
+  <!-- ── DEBUG TOGGLE ── -->
+  <button id="toggleDebug" onclick="toggleDebug()" title="Toggle Debug Panel" style="position: absolute; top: 12px; right: 12px; background: #6b7280; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; z-index: 100;">
+    🐛 Debug
+  </button>
 
   <!-- ── TAB COVER ── -->
   <div id="tab-cover" class="tab-content active">
@@ -789,6 +850,15 @@
         <button class="dialog-btn dialog-btn-primary" onclick="confirmInsertPage()">Insert</button>
       </div>
     </div>
+  </div>
+
+  <!-- ── DEBUG PANEL ── -->
+  <div id="debugPanel">
+    <div class="debug-header">
+      <span>🐛 DEBUG</span>
+      <button id="clearDebug" onclick="clearDebug()">Clear</button>
+    </div>
+    <div id="debugContent"></div>
   </div>
 
 </body>
