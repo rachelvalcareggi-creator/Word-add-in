@@ -575,6 +575,93 @@ async function insertPage(type) {
   }
 }
 
+/* ── TOOLS ── */
+let gridlinesVisible = false;
+let paragraphMarksVisible = false;
+
+async function pasteUnformatted() {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) {
+      await Word.run(async (context) => {
+        const selection = context.document.getSelection();
+        selection.insertText(text, "replace");
+        await context.sync();
+        setStatus("Pasted unformatted text!");
+      });
+    } else {
+      setStatus("Clipboard is empty");
+    }
+  } catch (error) {
+    logDebug("pasteUnformatted failed", error);
+    setStatus("Could not paste - check clipboard permissions");
+  }
+}
+
+async function toggleGridlines() {
+  try {
+    if (Office.actions && Office.actions.invoke) {
+      await Office.actions.invoke("ToggleGridlines");
+      gridlinesVisible = !gridlinesVisible;
+      document.getElementById("gridlinesBtn").textContent = 
+        gridlinesVisible ? "Hide Gridlines" : "Show Gridlines";
+      setStatus(gridlinesVisible ? "Gridlines shown" : "Gridlines hidden");
+    } else {
+      setStatus("Gridlines not supported");
+    }
+  } catch (error) {
+    logDebug("toggleGridlines failed", error);
+    setStatus("Could not toggle gridlines");
+  }
+}
+
+async function toggleParagraphMarks() {
+  try {
+    if (Office.actions && Office.actions.invoke) {
+      await Office.actions.invoke("ShowAllFormattingMarks");
+      paragraphMarksVisible = !paragraphMarksVisible;
+      document.getElementById("paragraphMarksBtn").textContent = 
+        paragraphMarksVisible ? "Hide Paragraph Marks" : "Show Paragraph Marks";
+      setStatus(paragraphMarksVisible ? "Paragraph marks shown" : "Paragraph marks hidden");
+    } else {
+      setStatus("Paragraph marks not supported");
+    }
+  } catch (error) {
+    logDebug("toggleParagraphMarks failed", error);
+    setStatus("Could not toggle paragraph marks");
+  }
+}
+
+async function updateTOC() {
+  try {
+    await Word.run(async (context) => {
+      const fields = context.document.fields;
+      fields.load("items");
+      await context.sync();
+      
+      let tocCount = 0;
+      fields.items.forEach((field) => {
+        field.load("type");
+        if (field.type === "TOC") {
+          tocCount++;
+        }
+      });
+      await context.sync();
+      
+      if (tocCount > 0) {
+        context.document.fields.updateAll();
+        await context.sync();
+        setStatus(`Updated ${tocCount} table of contents!`);
+      } else {
+        setStatus("No TOC found in document");
+      }
+    });
+  } catch (error) {
+    logDebug("updateTOC failed", error);
+    setStatus("Could not update TOC");
+  }
+}
+
 /* ── DEBUG ── */
 let debugEnabled = false;
 
