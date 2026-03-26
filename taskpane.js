@@ -499,106 +499,59 @@ async function applyBorders(borderType) {
 }
 
 /* ── LAYOUTS ── */
-function showInsertPageDialog(type) {
-  document.getElementById("insertPageType").value = type;
-  document.getElementById("insertPageDialog").classList.add("open");
-}
-
-function hideInsertPageDialog() {
-  document.getElementById("insertPageDialog").classList.remove("open");
-}
-
-function confirmInsertPage() {
-  const type = document.getElementById("insertPageType").value;
-  const atEnd = document.getElementById("radioEnd").checked;
-  
-  if (atEnd) {
-    insertPageAtEnd(type);
-  } else {
-    insertPageAtCursor(type);
+async function insertPageBreak() {
+  try {
+    await Word.run(async (context) => {
+      const selection = context.document.getSelection();
+      selection.insertBreak(Word.BreakType.page, "after");
+      await context.sync();
+      setStatus("Page break inserted!");
+    });
+  } catch (error) {
+    logDebug("insertPageBreak failed", error);
+    setStatus("Could not insert page break");
   }
-  
-  hideInsertPageDialog();
 }
 
 function getPageDimensions(type) {
   const A4_WIDTH = 12240;
   const A4_HEIGHT = 15840;
-  const A3_WIDTH = 15840;
-  const A3_HEIGHT = 22320;
   
   switch (type) {
     case "landscape":
       return { width: A4_HEIGHT, height: A4_WIDTH };
     case "portrait":
       return { width: A4_WIDTH, height: A4_HEIGHT };
-    case "a3-landscape":
-      return { width: A3_HEIGHT, height: A3_WIDTH };
-    case "a3-portrait":
-      return { width: A3_WIDTH, height: A3_HEIGHT };
     default:
       return { width: A4_HEIGHT, height: A4_WIDTH };
   }
 }
 
-async function insertPageAtEnd(type) {
-  const isLandscape = type === "landscape" || type === "a3-landscape";
+async function insertPage(type) {
+  const { width, height } = getPageDimensions(type);
   
   try {
     await Word.run(async (context) => {
       const body = context.document.body;
-      body.paragraphs.load("items");
-      await context.sync();
-      
-      const lastPara = body.paragraphs.items[body.paragraphs.items.length - 1];
-      lastPara.insertBreak(Word.BreakType.sectionNext, "after");
+      body.insertBreak(Word.BreakType.sectionNext, Word.InsertLocation.end);
       await context.sync();
       
       const sections = context.document.sections;
       sections.load("items");
       await context.sync();
       
-      const newSection = sections.items[sections.items.length - 1];
-      newSection.load("pageSetup");
+      const lastSection = sections.items[sections.items.length - 1];
+      lastSection.load("pageSetup");
       await context.sync();
       
-      if (newSection.pageSetup) {
-        newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
-        await context.sync();
-      }
+      lastSection.pageSetup.pageWidth = width;
+      lastSection.pageSetup.pageHeight = height;
+      await context.sync();
+      
       setStatus("Page inserted!");
     });
   } catch (error) {
-    logDebug(`insertPageAtEnd("${type}") failed`, error);
-    setStatus("Could not insert page");
-  }
-}
-
-async function insertPageAtCursor(type) {
-  const isLandscape = type === "landscape" || type === "a3-landscape";
-  
-  try {
-    await Word.run(async (context) => {
-      const selection = context.document.getSelection();
-      selection.insertBreak(Word.BreakType.sectionNext, "after");
-      await context.sync();
-      
-      const sections = context.document.sections;
-      sections.load("items");
-      await context.sync();
-      
-      const newSection = sections.items[sections.items.length - 1];
-      newSection.load("pageSetup");
-      await context.sync();
-      
-      if (newSection.pageSetup) {
-        newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
-        await context.sync();
-      }
-      setStatus("Page inserted!");
-    });
-  } catch (error) {
-    logDebug(`insertPageAtCursor("${type}") failed`, error);
+    logDebug(`insertPage("${type}") failed`, error);
     setStatus("Could not insert page");
   }
 }

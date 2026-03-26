@@ -687,27 +687,47 @@
   <!-- ── TAB STYLES ── -->
   <div id="tab-styles" class="tab-content">
     <div class="section-title">Headings</div>
-    <button class="menu-btn" onclick="applyStyle('Heading 1')">Heading 1</button>
-    <button class="menu-btn" onclick="applyStyle('Heading 2')">Heading 2</button>
-    <button class="menu-btn" onclick="applyStyle('Heading 3')">Heading 3</button>
+    <div class="dropdown-container">
+      <button class="dropdown-btn" onclick="toggleDropdown('headingsDropdown')">Headings</button>
+      <div id="headingsDropdown" class="dropdown-content">
+        <div class="dropdown-item" onclick="applyStyle('Heading 1')">Heading 1</div>
+        <div class="dropdown-item" onclick="applyStyle('Heading 2')">Heading 2</div>
+        <div class="dropdown-item" onclick="applyStyle('Heading 3')">Heading 3</div>
+      </div>
+    </div>
 
     <div class="section-title">Body</div>
     <button class="menu-btn" onclick="applyStyle('Normal')">Body Text</button>
 
     <div class="section-title">Bullets</div>
-    <button class="menu-btn" onclick="applyStyle('List Bullet')">Bullet 1</button>
-    <button class="menu-btn" onclick="applyStyle('List Bullet 2')">Bullet 2</button>
-    <button class="menu-btn" onclick="applyStyle('List Bullet 3')">Bullet 3</button>
+    <div class="dropdown-container">
+      <button class="dropdown-btn" onclick="toggleDropdown('bulletsDropdown')">Bullets</button>
+      <div id="bulletsDropdown" class="dropdown-content">
+        <div class="dropdown-item" onclick="applyStyle('List Bullet')">Bullet 1</div>
+        <div class="dropdown-item" onclick="applyStyle('List Bullet 2')">Bullet 2</div>
+        <div class="dropdown-item" onclick="applyStyle('List Bullet 3')">Bullet 3</div>
+      </div>
+    </div>
 
     <div class="section-title">Numbering</div>
-    <button class="menu-btn" onclick="applyStyle('List Number')">Number 1</button>
-    <button class="menu-btn" onclick="applyStyle('List Number 2')">Number 2</button>
-    <button class="menu-btn" onclick="applyStyle('List Number 3')">Number 3</button>
+    <div class="dropdown-container">
+      <button class="dropdown-btn" onclick="toggleDropdown('numberingDropdown')">Numbering</button>
+      <div id="numberingDropdown" class="dropdown-content">
+        <div class="dropdown-item" onclick="applyStyle('List Number')">Number 1</div>
+        <div class="dropdown-item" onclick="applyStyle('List Number 2')">Number 2</div>
+        <div class="dropdown-item" onclick="applyStyle('List Number 3')">Number 3</div>
+      </div>
+    </div>
 
     <div class="section-title">Tables</div>
-    <button class="menu-btn" onclick="applyTableStyle('heading')">Table Heading</button>
-    <button class="menu-btn" onclick="applyTableStyle('text')">Table Text</button>
-    <button class="menu-btn" onclick="applyTableStyle('bullets')">Table Bullets</button>
+    <div class="dropdown-container">
+      <button class="dropdown-btn" onclick="toggleDropdown('tablesDropdown')">Tables</button>
+      <div id="tablesDropdown" class="dropdown-content">
+        <div class="dropdown-item" onclick="applyTableStyle('heading')">Table Heading</div>
+        <div class="dropdown-item" onclick="applyTableStyle('text')">Table Text</div>
+        <div class="dropdown-item" onclick="applyTableStyle('bullets')">Table Bullets</div>
+      </div>
+    </div>
     
     <hr class="divider" />
     <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
@@ -817,12 +837,11 @@
   <!-- ── TAB LAYOUTS ── -->
   <div id="tab-layouts" class="tab-content">
     <div class="section-title">A4 Sizes</div>
-    <button class="menu-btn" onclick="showInsertPageDialog('landscape')">Insert Landscape Page</button>
-    <button class="menu-btn" onclick="showInsertPageDialog('portrait')">Insert Portrait Page</button>
+    <button class="menu-btn" onclick="insertPage('landscape')">Insert Landscape Page</button>
+    <button class="menu-btn" onclick="insertPage('portrait')">Insert Portrait Page</button>
 
-    <div class="section-title">A3 Sizes</div>
-    <button class="menu-btn" onclick="showInsertPageDialog('a3-landscape')">Insert A3 Landscape</button>
-    <button class="menu-btn" onclick="showInsertPageDialog('a3-portrait')">Insert A3 Portrait</button>
+    <div class="section-title">Breaks</div>
+    <button class="menu-btn" onclick="insertPageBreak()">Insert Page Break</button>
     
     <hr class="divider" />
     <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
@@ -838,32 +857,6 @@
       <button id="tableGridClose" onclick="hideTableGrid()">&times;</button>
       <div id="tableGrid"></div>
       <div id="tableGridCounter"></div>
-    </div>
-  </div>
-
-  <!-- ── INSERT PAGE DIALOG ── -->
-  <div id="insertPageDialog" class="dialog-overlay">
-    <div class="dialog-container">
-      <div class="dialog-header">
-        <h3>Insert Page</h3>
-        <button class="dialog-close" onclick="hideInsertPageDialog()">×</button>
-      </div>
-      <div class="dialog-body">
-        <input type="hidden" id="insertPageType" value="">
-        <p>Where do you want to insert?</p>
-        <label class="radio-option">
-          <input type="radio" name="insertLocation" id="radioEnd" value="end">
-          At the end of document
-        </label>
-        <label class="radio-option">
-          <input type="radio" name="insertLocation" id="radioCursor" value="cursor" checked>
-          At cursor position
-        </label>
-      </div>
-      <div class="dialog-footer">
-        <button class="dialog-btn dialog-btn-cancel" onclick="hideInsertPageDialog()">Cancel</button>
-        <button class="dialog-btn dialog-btn-primary" onclick="confirmInsertPage()">Insert</button>
-      </div>
     </div>
   </div>
 
