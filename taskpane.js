@@ -582,7 +582,6 @@ async function insertPageAtCursor(type) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      selection.collapse("end");
       selection.insertBreak(Word.BreakType.sectionNext, "after");
       await context.sync();
       
