@@ -617,7 +617,7 @@ async function toggleGridlines() {
 async function toggleParagraphMarks() {
   try {
     if (Office.actions && Office.actions.invoke) {
-      await Office.actions.invoke("ShowAllFormattingMarks");
+      await Office.actions.invoke("ToggleShowAllFormattingMarks");
       paragraphMarksVisible = !paragraphMarksVisible;
       document.getElementById("paragraphMarksBtn").textContent = 
         paragraphMarksVisible ? "Hide Paragraph Marks" : "Show Paragraph Marks";
