@@ -560,12 +560,14 @@ async function insertPageAtEnd(type) {
       await context.sync();
       
       const newSection = sections.items[sections.items.length - 1];
-      newSection.load("pageSetup");
+      newSection.load({ pageSetup: { pageWidth: true, pageHeight: true, orientation: true } });
       await context.sync();
       
-      newSection.pageSetup.pageWidth = dimensions.width;
-      newSection.pageSetup.pageHeight = dimensions.height;
-      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
+      newSection.pageSetup.set({
+        pageWidth: dimensions.width,
+        pageHeight: dimensions.height,
+        orientation: isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait
+      });
       await context.sync();
       setStatus("Page inserted!");
     });
@@ -590,12 +592,14 @@ async function insertPageAtCursor(type) {
       await context.sync();
       
       const newSection = sections.items[sections.items.length - 1];
-      newSection.load("pageSetup");
+      newSection.load({ pageSetup: { pageWidth: true, pageHeight: true, orientation: true } });
       await context.sync();
       
-      newSection.pageSetup.pageWidth = dimensions.width;
-      newSection.pageSetup.pageHeight = dimensions.height;
-      newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
+      newSection.pageSetup.set({
+        pageWidth: dimensions.width,
+        pageHeight: dimensions.height,
+        orientation: isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait
+      });
       await context.sync();
       setStatus("Page inserted!");
     });
