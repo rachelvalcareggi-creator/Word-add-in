@@ -579,8 +579,22 @@ async function insertPage(type) {
 let gridlinesVisible = false;
 let paragraphMarksVisible = false;
 
-async function pasteUnformatted() {
-  setStatus("Use Ctrl+Shift+V for plain text paste");
+function showToast() {
+  const toast = document.getElementById("shortcutToast");
+  if (toast) {
+    toast.classList.add("show");
+  }
+}
+
+function hideToast() {
+  const toast = document.getElementById("shortcutToast");
+  if (toast) {
+    toast.classList.remove("show");
+  }
+}
+
+function pasteUnformatted() {
+  showToast();
 }
 
 async function toggleGridlines() {
