@@ -580,17 +580,7 @@ let gridlinesVisible = false;
 let paragraphMarksVisible = false;
 
 async function pasteUnformatted() {
-  try {
-    if (Office.actions && Office.actions.invoke) {
-      await Office.actions.invoke("Paste");
-      setStatus("Pasted!");
-    } else {
-      setStatus("Paste not supported");
-    }
-  } catch (error) {
-    logDebug("pasteUnformatted failed", error);
-    setStatus("Paste failed");
-  }
+  setStatus("Use Ctrl+Shift+V for plain text paste");
 }
 
 async function toggleGridlines() {
