@@ -376,6 +376,25 @@ async function insertTableFromGrid(rows, cols) {
   }
 }
 
+async function insertTableCaption() {
+  try {
+    await Word.run(async (context) => {
+      const selection = context.document.getSelection();
+      selection.insertText("Table ", "replace");
+      await context.sync();
+      
+      const newSelection = context.document.getSelection();
+      newSelection.insertText(": ", "end");
+      await context.sync();
+      
+      setStatus("Table caption inserted!");
+    });
+  } catch (error) {
+    logDebug("insertTableCaption failed", error);
+    setStatus("Could not insert caption");
+  }
+}
+
 function toggleDropdown(id) {
   const dropdown = document.getElementById(id);
   const isOpen = dropdown.classList.contains("open");
