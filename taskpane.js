@@ -593,8 +593,18 @@ async function pasteUnformatted() {
       setStatus("Clipboard is empty");
     }
   } catch (error) {
-    logDebug("pasteUnformatted failed", error);
-    setStatus("Could not paste - check clipboard permissions");
+    try {
+      await Word.run(async (context) => {
+        const selection = context.document.getSelection();
+        selection.clear();
+        await context.sync();
+        document.execCommand('paste');
+        setStatus("Pasted (clipboard API unavailable)");
+      });
+    } catch (error2) {
+      logDebug("pasteUnformatted failed", error);
+      setStatus("Paste failed - copy text first, then use Ctrl+V");
+    }
   }
 }
 
