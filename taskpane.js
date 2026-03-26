@@ -581,30 +581,15 @@ let paragraphMarksVisible = false;
 
 async function pasteUnformatted() {
   try {
-    const text = await navigator.clipboard.readText();
-    if (text) {
-      await Word.run(async (context) => {
-        const selection = context.document.getSelection();
-        selection.insertText(text, "replace");
-        await context.sync();
-        setStatus("Pasted unformatted text!");
-      });
+    if (Office.actions && Office.actions.invoke) {
+      await Office.actions.invoke("Paste");
+      setStatus("Pasted!");
     } else {
-      setStatus("Clipboard is empty");
+      setStatus("Paste not supported");
     }
   } catch (error) {
-    try {
-      await Word.run(async (context) => {
-        const selection = context.document.getSelection();
-        selection.clear();
-        await context.sync();
-        document.execCommand('paste');
-        setStatus("Pasted (clipboard API unavailable)");
-      });
-    } catch (error2) {
-      logDebug("pasteUnformatted failed", error);
-      setStatus("Paste failed - copy text first, then use Ctrl+V");
-    }
+    logDebug("pasteUnformatted failed", error);
+    setStatus("Paste failed");
   }
 }
 
