@@ -670,11 +670,6 @@
     <button class="tab-btn" data-tab="layouts">Layouts</button>
   </div>
 
-  <!-- ── DEBUG TOGGLE ── -->
-  <button id="toggleDebug" onclick="toggleDebug()" title="Toggle Debug Panel" style="position: absolute; top: 12px; right: 12px; background: #6b7280; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; z-index: 100;">
-    🐛 Debug
-  </button>
-
   <!-- ── TAB COVER ── -->
   <div id="tab-cover" class="tab-content active">
     <h2>Cover Page Setup</h2>
@@ -682,6 +677,11 @@
       Reset Cover Setup
     </button>
     <p style="color: #6c757d; font-size: 12px;">Click "Reset Cover Setup" to create a new cover page.</p>
+    
+    <hr class="divider" />
+    <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
+      🐛 Debug Mode
+    </button>
   </div>
 
   <!-- ── TAB STYLES ── -->
@@ -708,6 +708,11 @@
     <button class="menu-btn" onclick="applyTableStyle('heading')">Table Heading</button>
     <button class="menu-btn" onclick="applyTableStyle('text')">Table Text</button>
     <button class="menu-btn" onclick="applyTableStyle('bullets')">Table Bullets</button>
+    
+    <hr class="divider" />
+    <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
+      🐛 Debug Mode
+    </button>
   </div>
 
   <!-- ── TAB TABLES ── -->
@@ -802,6 +807,11 @@
         </div>
       </div>
     </div>
+    
+    <hr class="divider" />
+    <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
+      🐛 Debug Mode
+    </button>
   </div>
 
   <!-- ── TAB LAYOUTS ── -->
@@ -813,6 +823,11 @@
     <div class="section-title">A3 Sizes</div>
     <button class="menu-btn" onclick="showInsertPageDialog('a3-landscape')">Insert A3 Landscape</button>
     <button class="menu-btn" onclick="showInsertPageDialog('a3-portrait')">Insert A3 Portrait</button>
+    
+    <hr class="divider" />
+    <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
+      🐛 Debug Mode
+    </button>
   </div>
 
   <p id="status"></p>
