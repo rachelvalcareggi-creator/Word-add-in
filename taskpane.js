@@ -542,7 +542,6 @@ function getPageDimensions(type) {
 }
 
 async function insertPageAtEnd(type) {
-  const dimensions = getPageDimensions(type);
   const isLandscape = type === "landscape" || type === "a3-landscape";
   
   try {
@@ -560,15 +559,13 @@ async function insertPageAtEnd(type) {
       await context.sync();
       
       const newSection = sections.items[sections.items.length - 1];
-      newSection.load({ pageSetup: { pageWidth: true, pageHeight: true, orientation: true } });
+      newSection.load("pageSetup");
       await context.sync();
       
-      newSection.pageSetup.set({
-        pageWidth: dimensions.width,
-        pageHeight: dimensions.height,
-        orientation: isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait
-      });
-      await context.sync();
+      if (newSection.pageSetup) {
+        newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
+        await context.sync();
+      }
       setStatus("Page inserted!");
     });
   } catch (error) {
@@ -578,7 +575,6 @@ async function insertPageAtEnd(type) {
 }
 
 async function insertPageAtCursor(type) {
-  const dimensions = getPageDimensions(type);
   const isLandscape = type === "landscape" || type === "a3-landscape";
   
   try {
@@ -592,15 +588,13 @@ async function insertPageAtCursor(type) {
       await context.sync();
       
       const newSection = sections.items[sections.items.length - 1];
-      newSection.load({ pageSetup: { pageWidth: true, pageHeight: true, orientation: true } });
+      newSection.load("pageSetup");
       await context.sync();
       
-      newSection.pageSetup.set({
-        pageWidth: dimensions.width,
-        pageHeight: dimensions.height,
-        orientation: isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait
-      });
-      await context.sync();
+      if (newSection.pageSetup) {
+        newSection.pageSetup.orientation = isLandscape ? Word.PageOrientation.landscape : Word.PageOrientation.portrait;
+        await context.sync();
+      }
       setStatus("Page inserted!");
     });
   } catch (error) {
