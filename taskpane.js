@@ -366,7 +366,8 @@ async function insertTableFromGrid(rows, cols) {
         tableData.push(row);
       }
       
-      selection.insertTable(rows, cols, "after", tableData);
+      const table = selection.insertTable(rows, cols, "after", tableData);
+      table.style = "GridTable4_Accent1";
       await context.sync();
       setStatus("Table inserted!");
     });
