@@ -3,6 +3,8 @@
 Office.onReady(() => {
   Office.actions.associate("insertLandscapePage", insertLandscapePage);
   Office.actions.associate("insertTable", insertTable);
+  Office.actions.associate("toggleGridlines", toggleGridlines);
+  Office.actions.associate("toggleParagraphs", toggleParagraphs);
 });
 
 // ─────────────────────────────────────────────
@@ -119,6 +121,42 @@ async function insertTable(event) {
     });
   } catch (error) {
     console.error("insertTable error:", error);
+  } finally {
+    event.completed();
+  }
+}
+
+// ─────────────────────────────────────────────
+// TOGGLE GRIDLINES
+// Toggles table gridlines visibility.
+// ─────────────────────────────────────────────
+async function toggleGridlines(event) {
+  try {
+    await Word.run(async (context) => {
+      const view = context.document.getView();
+      view.load("showGridLines");
+      await context.sync();
+      view.showGridLines = !view.showGridLines;
+      await context.sync();
+    });
+  } catch (error) {
+    console.error("toggleGridlines error:", error);
+  } finally {
+    event.completed();
+  }
+}
+
+// ─────────────────────────────────────────────
+// TOGGLE PARAGRAPHS
+// Toggles paragraph marks visibility.
+// ─────────────────────────────────────────────
+async function toggleParagraphs(event) {
+  try {
+    if (Office.actions && Office.actions.invoke) {
+      await Office.actions.invoke("ShowAllFormattingMarks");
+    }
+  } catch (error) {
+    console.error("toggleParagraphs error:", error);
   } finally {
     event.completed();
   }

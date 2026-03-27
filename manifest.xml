@@ -147,6 +147,38 @@
                   </Action>
                 </Control>
 
+                <Control xsi:type="Button" id="ShowGridlines">
+                  <Label resid="ShowGridlines.Label" />
+                  <Supertip>
+                    <Title resid="ShowGridlines.Label" />
+                    <Description resid="ShowGridlines.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>toggleGridlines</FunctionName>
+                  </Action>
+                </Control>
+
+                <Control xsi:type="Button" id="ShowParagraphs">
+                  <Label resid="ShowParagraphs.Label" />
+                  <Supertip>
+                    <Title resid="ShowParagraphs.Label" />
+                    <Description resid="ShowParagraphs.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>toggleParagraphs</FunctionName>
+                  </Action>
+                </Control>
+
               </Group>
             </CustomTab>
 
@@ -176,12 +208,16 @@
         <bt:String id="OpenStylePane.Label" DefaultValue="Rachele" />
         <bt:String id="InsertLandscape.Label" DefaultValue="Landscape Page" />
         <bt:String id="InsertTable.Label" DefaultValue="Insert Table" />
+        <bt:String id="ShowGridlines.Label" DefaultValue="Show Gridlines" />
+        <bt:String id="ShowParagraphs.Label" DefaultValue="Show Paragraphs" />
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="Click Style Pane in the Home tab, or visit My Tools for all features." />
         <bt:String id="OpenStylePane.Tooltip" DefaultValue="Open the Style Pane to apply custom styles." />
         <bt:String id="InsertLandscape.Tooltip" DefaultValue="Insert a new landscape-oriented page at the cursor." />
         <bt:String id="InsertTable.Tooltip" DefaultValue="Insert a formatted table at the cursor position." />
+        <bt:String id="ShowGridlines.Tooltip" DefaultValue="Toggle gridlines visibility." />
+        <bt:String id="ShowParagraphs.Tooltip" DefaultValue="Toggle paragraph marks visibility." />
       </bt:LongStrings>
     </Resources>
 
