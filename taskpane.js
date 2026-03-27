@@ -411,53 +411,52 @@ async function applyShadingColor(color) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      
-      const tables = selection.tables;
+      const selectionRange = selection.getRange("Start");
+      selectionRange.load("start");
+      await context.sync();
+
+      const tables = context.document.body.tables;
       tables.load("items");
       await context.sync();
 
       if (tables.items.length === 0) {
-        setStatus("Select cells in a table first");
+        setStatus("No table found in document");
         return;
       }
 
-      const table = tables.items[0];
-      table.load(["rows", "rows/index", "rows/cells", "rows/cells/index"]);
-      await context.sync();
+      let foundTable = null;
+      for (const table of tables.items) {
+        const tableRange = table.getRange("Start");
+        tableRange.load("start");
+        await context.sync();
+        
+        if (selectionRange.start >= tableRange.start) {
+          foundTable = table;
+        }
+      }
 
-      const selectionStart = selection.getRange("Start");
-      const selectionEnd = selection.getRange("End");
-      selectionStart.load("paragraphInfo");
-      selectionEnd.load("paragraphInfo");
-      await context.sync();
+      if (!foundTable) {
+        setStatus("Place cursor in a table");
+        return;
+      }
 
-      let cellCount = 0;
-      for (const row of table.rows.items) {
+      foundTable.load("rows");
+      await context.sync();
+      
+      for (const row of foundTable.rows.items) {
+        row.load("cells");
+        await context.sync();
         for (const cell of row.cells.items) {
-          const cellRange = cell.getRange("Complete");
-          cellRange.load("start");
-          await context.sync();
-          
-          if (cellRange.start >= selectionStart.start && cellRange.start <= selectionEnd.start) {
-            cell.load("shadingColor");
-            await context.sync();
-            cell.shadingColor = (color === "no-fill") ? "NoFill" : color;
-            cellCount++;
-          }
+          cell.shadingColor = (color === "no-fill") ? "NoFill" : color;
         }
       }
 
       await context.sync();
-      document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-      
-      if (cellCount > 0) {
-        setStatus(`Shading applied to ${cellCount} cell(s)!`);
-      } else {
-        setStatus("No cells in selection range");
-      }
+      document.querySelectorAll(".dropdown-content").forEach(d => d.classList.remove("open"));
+      setStatus("Shading applied!");
     });
   } catch (error) {
-    logDebug(`applyShadingColor("${color}") failed`, error);
+    logDebug("applyShadingColor failed", error);
     setStatus("Could not apply shading");
   }
 }
@@ -466,80 +465,81 @@ async function applyBorders(borderType) {
   try {
     await Word.run(async (context) => {
       const selection = context.document.getSelection();
-      
-      const tables = selection.tables;
+      const selectionRange = selection.getRange("Start");
+      selectionRange.load("start");
+      await context.sync();
+
+      const tables = context.document.body.tables;
       tables.load("items");
       await context.sync();
 
       if (tables.items.length === 0) {
-        setStatus("Select cells in a table first");
+        setStatus("No table found in document");
         return;
       }
 
-      const table = tables.items[0];
-      table.load(["rows", "rows/index", "rows/cells", "rows/cells/index"]);
-      await context.sync();
+      let foundTable = null;
+      for (const table of tables.items) {
+        const tableRange = table.getRange("Start");
+        tableRange.load("start");
+        await context.sync();
+        
+        if (selectionRange.start >= tableRange.start) {
+          foundTable = table;
+        }
+      }
 
-      const selectionStart = selection.getRange("Start");
-      const selectionEnd = selection.getRange("End");
-      selectionStart.load("start");
-      selectionEnd.load("start");
-      await context.sync();
+      if (!foundTable) {
+        setStatus("Place cursor in a table");
+        return;
+      }
 
-      let cellCount = 0;
-      for (const row of table.rows.items) {
+      foundTable.load("rows");
+      await context.sync();
+      
+      for (const row of foundTable.rows.items) {
+        row.load("cells");
+        await context.sync();
         for (const cell of row.cells.items) {
-          const cellRange = cell.getRange("Complete");
-          cellRange.load("start");
-          await context.sync();
-          
-          if (cellRange.start >= selectionStart.start && cellRange.start <= selectionEnd.start) {
-            const borders = cell.format.borders;
+          const borders = cell.format.borders;
 
-            if (borderType === "all") {
-              borders.top.visible = !borders.top.visible;
-              borders.bottom.visible = !borders.bottom.visible;
-              borders.left.visible = !borders.left.visible;
-              borders.right.visible = !borders.right.visible;
-            } else if (borderType === "outside") {
-              borders.top.visible = !borders.top.visible;
-              borders.bottom.visible = !borders.bottom.visible;
-              borders.left.visible = !borders.left.visible;
-              borders.right.visible = !borders.right.visible;
-              borders.insideHorizontal.visible = false;
-              borders.insideVertical.visible = false;
-            } else if (borderType === "inside") {
-              borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
-              borders.insideVertical.visible = !borders.insideVertical.visible;
-            } else if (borderType === "top") {
-              borders.top.visible = !borders.top.visible;
-            } else if (borderType === "bottom") {
-              borders.bottom.visible = !borders.bottom.visible;
-            } else if (borderType === "left") {
-              borders.left.visible = !borders.left.visible;
-            } else if (borderType === "right") {
-              borders.right.visible = !borders.right.visible;
-            } else if (borderType === "none") {
-              borders.top.visible = false;
-              borders.bottom.visible = false;
-              borders.left.visible = false;
-              borders.right.visible = false;
-              borders.insideHorizontal.visible = false;
-              borders.insideVertical.visible = false;
-            }
-            cellCount++;
+          if (borderType === "all") {
+            borders.top.visible = !borders.top.visible;
+            borders.bottom.visible = !borders.bottom.visible;
+            borders.left.visible = !borders.left.visible;
+            borders.right.visible = !borders.right.visible;
+          } else if (borderType === "outside") {
+            borders.top.visible = !borders.top.visible;
+            borders.bottom.visible = !borders.bottom.visible;
+            borders.left.visible = !borders.left.visible;
+            borders.right.visible = !borders.right.visible;
+            borders.insideHorizontal.visible = false;
+            borders.insideVertical.visible = false;
+          } else if (borderType === "inside") {
+            borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
+            borders.insideVertical.visible = !borders.insideVertical.visible;
+          } else if (borderType === "top") {
+            borders.top.visible = !borders.top.visible;
+          } else if (borderType === "bottom") {
+            borders.bottom.visible = !borders.bottom.visible;
+          } else if (borderType === "left") {
+            borders.left.visible = !borders.left.visible;
+          } else if (borderType === "right") {
+            borders.right.visible = !borders.right.visible;
+          } else if (borderType === "none") {
+            borders.top.visible = false;
+            borders.bottom.visible = false;
+            borders.left.visible = false;
+            borders.right.visible = false;
+            borders.insideHorizontal.visible = false;
+            borders.insideVertical.visible = false;
           }
         }
       }
 
       await context.sync();
-      document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-      
-      if (cellCount > 0) {
-        setStatus(`Borders applied to ${cellCount} cell(s)!`);
-      } else {
-        setStatus("No cells in selection range");
-      }
+      document.querySelectorAll(".dropdown-content").forEach(d => d.classList.remove("open"));
+      setStatus("Borders applied!");
     });
   } catch (error) {
     logDebug(`applyBorders("${borderType}") failed`, error);
