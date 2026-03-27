@@ -489,30 +489,21 @@ function pasteUnformatted() {
 async function updateTOC() {
   try {
     await Word.run(async (context) => {
-      const fields = context.document.fields;
-      fields.load("items");
+      context.document.fields.updateAll();
       await context.sync();
-      
-      let tocCount = 0;
-      fields.items.forEach((field) => {
-        field.load("type");
-        if (field.type === "TOC") {
-          tocCount++;
-        }
-      });
-      await context.sync();
-      
-      if (tocCount > 0) {
-        context.document.fields.updateAll();
-        await context.sync();
-        setStatus(`Updated ${tocCount} table of contents!`);
-      } else {
-        setStatus("No TOC found in document");
-      }
+      setStatus("TOC updated!");
     });
   } catch (error) {
-    logDebug("updateTOC failed", error);
-    setStatus("Could not update TOC");
+    try {
+      if (Office.actions && Office.actions.invoke) {
+        await Office.actions.invoke("UpdateAllFields");
+        setStatus("TOC updated!");
+      } else {
+        showToast("TOC update only works in Word Desktop. Use Ctrl+A then F9 in Word Online.");
+      }
+    } catch (invokeError) {
+      showToast("TOC update only works in Word Desktop. Use Ctrl+A then F9 in Word Online.");
+    }
   }
 }
 
