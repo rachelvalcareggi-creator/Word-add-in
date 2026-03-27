@@ -577,7 +577,6 @@ async function insertPage(type) {
 
 /* ── TOOLS ── */
 let gridlinesVisible = false;
-let paragraphMarksVisible = false;
 
 function showToast() {
   const toast = document.getElementById("shortcutToast");
@@ -611,23 +610,6 @@ async function toggleGridlines() {
   } catch (error) {
     logDebug("toggleGridlines failed", error);
     setStatus("Could not toggle gridlines");
-  }
-}
-
-async function toggleParagraphMarks() {
-  try {
-    if (Office.actions && Office.actions.invoke) {
-      await Office.actions.invoke("ShowAllFormattingMarks");
-      paragraphMarksVisible = !paragraphMarksVisible;
-      document.getElementById("paragraphMarksBtn").textContent = 
-        paragraphMarksVisible ? "Hide Paragraph Marks" : "Show Paragraph Marks";
-      setStatus(paragraphMarksVisible ? "Paragraph marks shown" : "Paragraph marks hidden");
-    } else {
-      setStatus("Paragraph marks not supported");
-    }
-  } catch (error) {
-    logDebug("toggleParagraphMarks failed", error);
-    setStatus("Could not toggle paragraph marks");
   }
 }
 
