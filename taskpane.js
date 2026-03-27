@@ -410,40 +410,35 @@ function toggleDropdown(id) {
 async function applyShadingColor(color) {
   try {
     await Word.run(async (context) => {
-      const tables = context.document.body.tables;
+      const selection = context.document.getSelection();
+      
+      const tables = selection.tables;
       tables.load("items");
       await context.sync();
 
       if (tables.items.length === 0) {
-        setStatus("No table found");
+        setStatus("Select cells in a table first");
         return;
       }
 
-      const lastTable = tables.items[tables.items.length - 1];
-      lastTable.load(["rows/cells", "rows/cells/shadingColor"]);
+      const cells = selection.cells;
+      cells.load("items");
       await context.sync();
 
-      for (const row of lastTable.rows.items) {
-        row.load(["cells", "cells/shadingColor"]);
+      if (cells.items.length === 0) {
+        setStatus("Select cells in a table first");
+        return;
+      }
+
+      for (const cell of cells.items) {
+        cell.load("shadingColor");
         await context.sync();
-
-        if (row.cells && row.cells.items) {
-          for (const cell of row.cells.items) {
-            cell.load("shadingColor");
-            await context.sync();
-
-            if (color === "no-fill") {
-              cell.shadingColor = "NoFill";
-            } else {
-              cell.shadingColor = color;
-            }
-          }
-        }
+        cell.shadingColor = (color === "no-fill") ? "NoFill" : color;
       }
 
       await context.sync();
       document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-      setStatus("Shading applied to table");
+      setStatus("Shading applied!");
     });
   } catch (error) {
     logDebug(`applyShadingColor("${color}") failed`, error);
@@ -454,65 +449,65 @@ async function applyShadingColor(color) {
 async function applyBorders(borderType) {
   try {
     await Word.run(async (context) => {
-      const tables = context.document.body.tables;
+      const selection = context.document.getSelection();
+      
+      const tables = selection.tables;
       tables.load("items");
       await context.sync();
 
       if (tables.items.length === 0) {
-        setStatus("No table found");
+        setStatus("Select cells in a table first");
         return;
       }
 
-      const lastTable = tables.items[tables.items.length - 1];
-      lastTable.load("rows");
+      const cells = selection.cells;
+      cells.load("items");
       await context.sync();
 
-      for (let rowIdx = 0; rowIdx < lastTable.rows.items.length; rowIdx++) {
-        const row = lastTable.rows.items[rowIdx];
-        row.load("cells");
-        await context.sync();
+      if (cells.items.length === 0) {
+        setStatus("Select cells in a table first");
+        return;
+      }
 
-        for (let cellIdx = 0; cellIdx < row.cells.items.length; cellIdx++) {
-          const cell = row.cells.items[cellIdx];
-          const borders = cell.format.borders;
+      for (const cell of cells.items) {
+        const borders = cell.format.borders;
 
-          if (borderType === "all") {
-            borders.top.visible = !borders.top.visible;
-            borders.bottom.visible = !borders.bottom.visible;
-            borders.left.visible = !borders.left.visible;
-            borders.right.visible = !borders.right.visible;
-          } else if (borderType === "outside") {
-            borders.top.visible = !borders.top.visible;
-            borders.bottom.visible = !borders.bottom.visible;
-            borders.left.visible = !borders.left.visible;
-            borders.right.visible = !borders.right.visible;
-            borders.insideHorizontal.visible = false;
-            borders.insideVertical.visible = false;
-          } else if (borderType === "inside") {
-            borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
-            borders.insideVertical.visible = !borders.insideVertical.visible;
-          } else if (borderType === "top") {
-            borders.top.visible = !borders.top.visible;
-          } else if (borderType === "bottom") {
-            borders.bottom.visible = !borders.bottom.visible;
-          } else if (borderType === "left") {
-            borders.left.visible = !borders.left.visible;
-          } else if (borderType === "right") {
-            borders.right.visible = !borders.right.visible;
-          } else if (borderType === "none") {
-            borders.top.visible = false;
-            borders.bottom.visible = false;
-            borders.left.visible = false;
-            borders.right.visible = false;
-            borders.insideHorizontal.visible = false;
-            borders.insideVertical.visible = false;
-          }
+        if (borderType === "all") {
+          borders.top.visible = !borders.top.visible;
+          borders.bottom.visible = !borders.bottom.visible;
+          borders.left.visible = !borders.left.visible;
+          borders.right.visible = !borders.right.visible;
+        } else if (borderType === "outside") {
+          borders.top.visible = !borders.top.visible;
+          borders.bottom.visible = !borders.bottom.visible;
+          borders.left.visible = !borders.left.visible;
+          borders.right.visible = !borders.right.visible;
+          borders.insideHorizontal.visible = false;
+          borders.insideVertical.visible = false;
+        } else if (borderType === "inside") {
+          borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
+          borders.insideVertical.visible = !borders.insideVertical.visible;
+        } else if (borderType === "top") {
+          borders.top.visible = !borders.top.visible;
+        } else if (borderType === "bottom") {
+          borders.bottom.visible = !borders.bottom.visible;
+        } else if (borderType === "left") {
+          borders.left.visible = !borders.left.visible;
+        } else if (borderType === "right") {
+          borders.right.visible = !borders.right.visible;
+        } else if (borderType === "none") {
+          borders.top.visible = false;
+          borders.bottom.visible = false;
+          borders.left.visible = false;
+          borders.right.visible = false;
+          borders.insideHorizontal.visible = false;
+          borders.insideVertical.visible = false;
         }
       }
 
       await context.sync();
       document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-      setStatus("Borders applied to table");
+      setStatus("Borders applied!");
     });
   } catch (error) {
     logDebug(`applyBorders("${borderType}") failed`, error);
