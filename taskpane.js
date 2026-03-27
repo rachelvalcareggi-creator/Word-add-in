@@ -576,8 +576,6 @@ async function insertPage(type) {
 }
 
 /* ── TOOLS ── */
-let gridlinesVisible = false;
-
 function showToast(message) {
   const toast = document.getElementById("shortcutToast");
   const toastMessage = document.getElementById("toastMessage");
@@ -596,29 +594,6 @@ function hideToast() {
 
 function pasteUnformatted() {
   showToast("⌨️ Use <strong>Ctrl+Shift+V</strong> (Win) or <strong>Cmd+Shift+V</strong> (Mac) to paste unformatted text");
-}
-
-async function toggleGridlines() {
-  try {
-    if (Office.context.requirements.isSetSupported("WordApiDesktop", "1.4")) {
-      await Word.run(async (context) => {
-        const view = context.document.getView();
-        view.load("areTableGridlinesDisplayed");
-        await context.sync();
-        view.areTableGridlinesDisplayed = !view.areTableGridlinesDisplayed;
-        await context.sync();
-        gridlinesVisible = view.areTableGridlinesDisplayed;
-        document.getElementById("gridlinesBtn").textContent = 
-          gridlinesVisible ? "Hide Gridlines" : "Show Gridlines";
-        setStatus(gridlinesVisible ? "Gridlines shown" : "Gridlines hidden");
-      });
-    } else {
-      showToast("Gridlines not supported in Word Online");
-    }
-  } catch (error) {
-    logDebug("toggleGridlines failed", error);
-    setStatus("Could not toggle gridlines");
-  }
 }
 
 async function updateTOC() {

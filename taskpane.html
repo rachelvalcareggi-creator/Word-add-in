@@ -798,10 +798,19 @@
   <!-- ── TAB TABLES ── -->
   <div id="tab-tables" class="tab-content">
     <div class="section-title">Insert Table</div>
-
     <button class="menu-btn" onclick="showTableGrid()" style="background: #4F46E5; color: white; border-color: #4F46E5;">
       Insert Table
     </button>
+
+    <div class="section-title">Table Styles</div>
+    <div class="dropdown-container">
+      <button class="dropdown-btn" onclick="toggleDropdown('tableStylesDropdown')">Table Styles</button>
+      <div id="tableStylesDropdown" class="dropdown-content">
+        <div class="dropdown-item" onclick="applyTableStyle('heading')">Table Heading</div>
+        <div class="dropdown-item" onclick="applyTableStyle('text')">Table Text</div>
+        <div class="dropdown-item" onclick="applyTableStyle('bullets')">Table Bullets</div>
+      </div>
+    </div>
 
     <div class="section-title">Caption</div>
     <button class="menu-btn" onclick="insertTableCaption()">Insert Table Caption</button>
@@ -890,16 +899,6 @@
         </div>
       </div>
     </div>
-
-    <div class="section-title">Table Styles</div>
-    <div class="dropdown-container">
-      <button class="dropdown-btn" onclick="toggleDropdown('tableStylesDropdown')">Table Styles</button>
-      <div id="tableStylesDropdown" class="dropdown-content">
-        <div class="dropdown-item" onclick="applyTableStyle('heading')">Table Heading</div>
-        <div class="dropdown-item" onclick="applyTableStyle('text')">Table Text</div>
-        <div class="dropdown-item" onclick="applyTableStyle('bullets')">Table Bullets</div>
-      </div>
-    </div>
     
     <hr class="divider" />
     <button class="menu-btn" onclick="toggleDebug()" style="background: #6b7280; color: white; border-color: #6b7280;">
@@ -926,9 +925,6 @@
   <div id="tab-tools" class="tab-content">
     <div class="section-title">Clipboard</div>
     <button class="menu-btn" onclick="pasteUnformatted()">Paste Unformatted</button>
-
-    <div class="section-title">View</div>
-    <button class="menu-btn" onclick="toggleGridlines()" id="gridlinesBtn">Show Gridlines</button>
 
     <div class="section-title">Document</div>
     <button class="menu-btn" onclick="updateTOC()">Update TOC</button>
