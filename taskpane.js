@@ -165,6 +165,13 @@ function createCoverWithImage() {
       const pageWidth = section.pageWidth;
       const pageHeight = section.pageHeight;
 
+      // Apply margins from config
+      const margins = COVER_CONFIG.margins;
+      section.pageMargin.top = margins.top;
+      section.pageMargin.bottom = margins.bottom;
+      section.pageMargin.left = margins.left;
+      section.pageMargin.right = margins.right;
+
       // Insert image in body
       const firstPara = body.paragraphs.getFirst();
       const insertPoint = firstPara.getRange("start");
