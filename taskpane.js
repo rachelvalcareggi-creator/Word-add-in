@@ -159,7 +159,7 @@ function createCoverWithImage() {
     Word.run(async (context) => {
       const body = context.document.body;
       const section = context.document.sections.getFirst();
-      section.load("pageWidth, pageHeight");
+      section.load("pageWidth, pageHeight, pageMargin");
       await context.sync();
 
       const pageWidth = section.pageWidth;
