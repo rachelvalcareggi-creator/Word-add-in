@@ -367,9 +367,9 @@ async function insertTableFromGrid(rows, cols) {
       }
       
       const table = selection.insertTable(rows, cols, "after", tableData);
-      table.load("style");
+      table.load("styleBuiltIn");
       await context.sync();
-      table.style = "GridTable4_Accent1";
+      table.styleBuiltIn = Word.BuiltInStyleName.gridTable4_Accent1;
       await context.sync();
       setStatus("Table inserted!");
     });

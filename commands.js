@@ -103,11 +103,11 @@ async function insertTable(event) {
 
       // Insert the table after the selection
       const table = selection.insertTable(ROWS, COLS, Word.InsertLocation.after, values);
-      table.load("style");
+      table.load("styleBuiltIn");
       await context.sync();
       
-      // Apply Grid Table 4 - Accent 1 style
-      table.style = "GridTable4_Accent1";
+      // Apply Grid Table 4 - Accent 1 style using built-in enum
+      table.styleBuiltIn = Word.BuiltInStyleName.gridTable4_Accent1;
       await context.sync();
 
       // Style the header row after sync
