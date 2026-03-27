@@ -10,7 +10,7 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Your Company Name</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="My Client Add-in" />
+  <DisplayName DefaultValue="UpsideDown Custom Tab" />
   <Description DefaultValue="Custom Word tools for your workflow." />
   <IconUrl DefaultValue="https://rachelvalcareggi-creator.github.io/Word-add-in/assets/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://rachelvalcareggi-creator.github.io/Word-add-in/assets/icon-64.png" />
@@ -128,9 +128,9 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with your add-in!" />
-        <bt:String id="TabLabel" DefaultValue="My Tools" />
+        <bt:String id="TabLabel" DefaultValue="UpsideDown Custom Tab" />
         <bt:String id="StyleGroup.Label" DefaultValue="Styles" />
-        <bt:String id="OpenStylePane.Label" DefaultValue="Rachele" />
+        <bt:String id="OpenStylePane.Label" DefaultValue="UpsideDown" />
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="Click Style Pane in the Home tab, or visit My Tools for all features." />
