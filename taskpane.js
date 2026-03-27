@@ -165,17 +165,21 @@ function createCoverWithImage() {
       const pageWidth = section.pageWidth;
       const pageHeight = section.pageHeight;
 
-      // Insert image in header
-      const header = section.getHeader("primary");
-      header.clear();
-      const headerRange = header.getRange();
-      const coverImg = headerRange.insertInlinePictureFromBase64(imgBase64, "after");
+      // Insert image in body
+      const firstPara = body.paragraphs.getFirst();
+      const insertPoint = firstPara.getRange("start");
+
+      const coverImg = insertPoint.insertInlinePictureFromBase64(imgBase64, "after");
       coverImg.width = pageWidth / 20;
       coverImg.height = pageHeight / 20;
 
-      // Title, subtitle, date in body
-      const firstPara = body.paragraphs.getFirst();
-      const textStart = firstPara.getRange("start");
+      const imgEnd = coverImg.getRange("end");
+
+      const placeholderPara = imgEnd.insertParagraph("", "after");
+      placeholderPara.font.size = 48;
+      placeholderPara.insertText("Click here to add your image", "end");
+
+      const textStart = placeholderPara.getRange("end");
 
       const titleControl = textStart.insertContentControl();
       titleControl.type = "richText";
