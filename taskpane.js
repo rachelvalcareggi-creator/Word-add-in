@@ -421,24 +421,40 @@ async function applyShadingColor(color) {
         return;
       }
 
-      const cells = selection.cells;
-      cells.load("items");
+      const table = tables.items[0];
+      table.load(["rows", "rows/index", "rows/cells", "rows/cells/index"]);
       await context.sync();
 
-      if (cells.items.length === 0) {
-        setStatus("Select cells in a table first");
-        return;
-      }
+      const selectionStart = selection.getRange("Start");
+      const selectionEnd = selection.getRange("End");
+      selectionStart.load("paragraphInfo");
+      selectionEnd.load("paragraphInfo");
+      await context.sync();
 
-      for (const cell of cells.items) {
-        cell.load("shadingColor");
-        await context.sync();
-        cell.shadingColor = (color === "no-fill") ? "NoFill" : color;
+      let cellCount = 0;
+      for (const row of table.rows.items) {
+        for (const cell of row.cells.items) {
+          const cellRange = cell.getRange("Complete");
+          cellRange.load("start");
+          await context.sync();
+          
+          if (cellRange.start >= selectionStart.start && cellRange.start <= selectionEnd.start) {
+            cell.load("shadingColor");
+            await context.sync();
+            cell.shadingColor = (color === "no-fill") ? "NoFill" : color;
+            cellCount++;
+          }
+        }
       }
 
       await context.sync();
       document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-      setStatus("Shading applied!");
+      
+      if (cellCount > 0) {
+        setStatus(`Shading applied to ${cellCount} cell(s)!`);
+      } else {
+        setStatus("No cells in selection range");
+      }
     });
   } catch (error) {
     logDebug(`applyShadingColor("${color}") failed`, error);
@@ -460,54 +476,70 @@ async function applyBorders(borderType) {
         return;
       }
 
-      const cells = selection.cells;
-      cells.load("items");
+      const table = tables.items[0];
+      table.load(["rows", "rows/index", "rows/cells", "rows/cells/index"]);
       await context.sync();
 
-      if (cells.items.length === 0) {
-        setStatus("Select cells in a table first");
-        return;
-      }
+      const selectionStart = selection.getRange("Start");
+      const selectionEnd = selection.getRange("End");
+      selectionStart.load("start");
+      selectionEnd.load("start");
+      await context.sync();
 
-      for (const cell of cells.items) {
-        const borders = cell.format.borders;
+      let cellCount = 0;
+      for (const row of table.rows.items) {
+        for (const cell of row.cells.items) {
+          const cellRange = cell.getRange("Complete");
+          cellRange.load("start");
+          await context.sync();
+          
+          if (cellRange.start >= selectionStart.start && cellRange.start <= selectionEnd.start) {
+            const borders = cell.format.borders;
 
-        if (borderType === "all") {
-          borders.top.visible = !borders.top.visible;
-          borders.bottom.visible = !borders.bottom.visible;
-          borders.left.visible = !borders.left.visible;
-          borders.right.visible = !borders.right.visible;
-        } else if (borderType === "outside") {
-          borders.top.visible = !borders.top.visible;
-          borders.bottom.visible = !borders.bottom.visible;
-          borders.left.visible = !borders.left.visible;
-          borders.right.visible = !borders.right.visible;
-          borders.insideHorizontal.visible = false;
-          borders.insideVertical.visible = false;
-        } else if (borderType === "inside") {
-          borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
-          borders.insideVertical.visible = !borders.insideVertical.visible;
-        } else if (borderType === "top") {
-          borders.top.visible = !borders.top.visible;
-        } else if (borderType === "bottom") {
-          borders.bottom.visible = !borders.bottom.visible;
-        } else if (borderType === "left") {
-          borders.left.visible = !borders.left.visible;
-        } else if (borderType === "right") {
-          borders.right.visible = !borders.right.visible;
-        } else if (borderType === "none") {
-          borders.top.visible = false;
-          borders.bottom.visible = false;
-          borders.left.visible = false;
-          borders.right.visible = false;
-          borders.insideHorizontal.visible = false;
-          borders.insideVertical.visible = false;
+            if (borderType === "all") {
+              borders.top.visible = !borders.top.visible;
+              borders.bottom.visible = !borders.bottom.visible;
+              borders.left.visible = !borders.left.visible;
+              borders.right.visible = !borders.right.visible;
+            } else if (borderType === "outside") {
+              borders.top.visible = !borders.top.visible;
+              borders.bottom.visible = !borders.bottom.visible;
+              borders.left.visible = !borders.left.visible;
+              borders.right.visible = !borders.right.visible;
+              borders.insideHorizontal.visible = false;
+              borders.insideVertical.visible = false;
+            } else if (borderType === "inside") {
+              borders.insideHorizontal.visible = !borders.insideHorizontal.visible;
+              borders.insideVertical.visible = !borders.insideVertical.visible;
+            } else if (borderType === "top") {
+              borders.top.visible = !borders.top.visible;
+            } else if (borderType === "bottom") {
+              borders.bottom.visible = !borders.bottom.visible;
+            } else if (borderType === "left") {
+              borders.left.visible = !borders.left.visible;
+            } else if (borderType === "right") {
+              borders.right.visible = !borders.right.visible;
+            } else if (borderType === "none") {
+              borders.top.visible = false;
+              borders.bottom.visible = false;
+              borders.left.visible = false;
+              borders.right.visible = false;
+              borders.insideHorizontal.visible = false;
+              borders.insideVertical.visible = false;
+            }
+            cellCount++;
+          }
         }
       }
 
       await context.sync();
       document.querySelectorAll(".dropdown-content").forEach((d) => d.classList.remove("open"));
-      setStatus("Borders applied!");
+      
+      if (cellCount > 0) {
+        setStatus(`Borders applied to ${cellCount} cell(s)!`);
+      } else {
+        setStatus("No cells in selection range");
+      }
     });
   } catch (error) {
     logDebug(`applyBorders("${borderType}") failed`, error);
