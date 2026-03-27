@@ -458,7 +458,7 @@
     /* ── INSERT PAGE DIALOG ── */
     .dialog-overlay {
       display: none;
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
@@ -467,6 +467,9 @@
       z-index: 2000;
       justify-content: center;
       align-items: center;
+      overflow: auto;
+      padding: 20px;
+      box-sizing: border-box;
     }
     .dialog-overlay.open {
       display: flex;
@@ -474,9 +477,11 @@
     .dialog-container {
       background: white;
       border-radius: 12px;
-      width: 320px;
+      width: 100%;
+      max-width: 320px;
+      max-height: calc(100% - 40px);
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      overflow: hidden;
+      overflow-y: auto;
     }
     .dialog-header {
       display: flex;
