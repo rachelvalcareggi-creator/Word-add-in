@@ -701,15 +701,12 @@ function clearDebug() {
 function toggleDebug() {
   debugEnabled = !debugEnabled;
   const debugPanel = document.getElementById("debugPanel");
-  const btn = document.getElementById("toggleDebug");
   
   if (debugEnabled) {
     debugPanel.classList.add("visible");
-    btn.style.background = "#dc2626";
     logDebug("Debug mode enabled");
   } else {
     debugPanel.classList.remove("visible");
-    btn.style.background = "#6b7280";
     logDebug("Debug mode disabled");
   }
 }
