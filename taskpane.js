@@ -169,8 +169,8 @@ function createCoverWithImage() {
       const insertPoint = firstPara.getRange("start");
 
       const coverImg = insertPoint.insertInlinePictureFromBase64(imgBase64, "after");
-      coverImg.width = pageWidth;
-      coverImg.height = pageHeight;
+      coverImg.width = pageWidth / 20;
+      coverImg.height = pageHeight / 20;
 
       const imgEnd = coverImg.getRange("end");
 
