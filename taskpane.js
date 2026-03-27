@@ -175,21 +175,36 @@ function createCoverWithImage() {
 
       const imgEnd = coverImg.getRange("end");
 
-      const placeholderPara = imgEnd.insertParagraph("", "after");
-      placeholderPara.font.size = 48;
-      placeholderPara.insertText("Click here to add your image", "end");
+      // Use config for text positions
+      const config = COVER_CONFIG.textPositions;
+      
+      // Add spacing paragraphs based on config (1cm ≈ 567 twips)
+      const addSpacing = (cmValue) => {
+        const twips = parseFloat(cmValue) * 567;
+        return Math.round(twips / 240); // Approximate paragraph spacing
+      };
 
-      const textStart = placeholderPara.getRange("end");
+      const titleSpacing = addSpacing(config.title.top);
+      for (let i = 0; i < titleSpacing; i++) {
+        imgEnd.insertParagraph("", "after");
+      }
 
-      const titleControl = textStart.insertContentControl();
+      const titleControl = imgEnd.insertContentControl();
       titleControl.type = "richText";
       titleControl.title = "Title";
       titleControl.tag = "title";
-      titleControl.style = "Title";
       titleControl.insertText(title, "end");
       const titleRange = titleControl.getRange();
-      titleRange.font.size = 40;
-      titleRange.font.bold = true;
+      titleRange.font.size = config.title.fontSize;
+      titleRange.font.bold = config.title.fontBold;
+      if (config.title.color) {
+        titleRange.font.color = config.title.color;
+      }
+
+      const subtitleSpacing = addSpacing(config.subtitle.top) - addSpacing(config.title.top);
+      for (let i = 0; i < subtitleSpacing; i++) {
+        titleRange.insertParagraph("", "after");
+      }
 
       const subtitleControl = titleRange.insertContentControl();
       subtitleControl.type = "richText";
@@ -197,7 +212,16 @@ function createCoverWithImage() {
       subtitleControl.tag = "subtitle";
       subtitleControl.insertText(subtitle, "end");
       const subtitleRange = subtitleControl.getRange();
-      subtitleRange.font.size = 24;
+      subtitleRange.font.size = config.subtitle.fontSize;
+      subtitleRange.font.bold = config.subtitle.fontBold;
+      if (config.subtitle.color) {
+        subtitleRange.font.color = config.subtitle.color;
+      }
+
+      const dateSpacing = addSpacing(config.date.top) - addSpacing(config.subtitle.top);
+      for (let i = 0; i < dateSpacing; i++) {
+        subtitleRange.insertParagraph("", "after");
+      }
 
       const dateControl = subtitleRange.insertContentControl();
       dateControl.type = "richText";
@@ -205,8 +229,10 @@ function createCoverWithImage() {
       dateControl.tag = "date";
       dateControl.insertText(date, "end");
       const dateRange = dateControl.getRange();
-      dateRange.font.size = 16;
-      dateRange.font.color = "#6c757d";
+      dateRange.font.size = config.date.fontSize;
+      if (config.date.color) {
+        dateRange.font.color = config.date.color;
+      }
 
       await context.sync();
     }).then(() => {
