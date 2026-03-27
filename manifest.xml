@@ -129,7 +129,7 @@
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with your add-in!" />
         <bt:String id="TabLabel" DefaultValue="UpsideDown Custom Tab" />
-        <bt:String id="StyleGroup.Label" DefaultValue="Styles" />
+        <bt:String id="StyleGroup.Label" DefaultValue="Custom Tools" />
         <bt:String id="OpenStylePane.Label" DefaultValue="UpsideDown" />
       </bt:ShortStrings>
       <bt:LongStrings>
