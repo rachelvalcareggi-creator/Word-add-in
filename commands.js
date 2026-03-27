@@ -104,8 +104,8 @@ async function insertTable(event) {
       // Insert the table after the selection
       const table = selection.insertTable(ROWS, COLS, Word.InsertLocation.after, values);
 
-      // Apply a built-in table style (safe cross-version name)
-      table.style = "Table Grid";
+      // Apply Grid Table 4 - Accent 1 style
+      table.style = "GridTable4_Accent1";
 
       await context.sync();
 
