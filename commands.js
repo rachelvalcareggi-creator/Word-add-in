@@ -129,16 +129,22 @@ async function insertTable(event) {
 // ─────────────────────────────────────────────
 // TOGGLE GRIDLINES
 // Toggles table gridlines visibility.
+// Works in Word Desktop (WordApiDesktop 1.4)
+// Shows message in Word Online
 // ─────────────────────────────────────────────
 async function toggleGridlines(event) {
   try {
-    await Word.run(async (context) => {
-      const view = context.document.getView();
-      view.load("showGridLines");
-      await context.sync();
-      view.showGridLines = !view.showGridLines;
-      await context.sync();
-    });
+    if (Office.context.requirements.isSetSupported("WordApiDesktop", "1.4")) {
+      await Word.run(async (context) => {
+        const view = context.document.getView();
+        view.load("areTableGridlinesDisplayed");
+        await context.sync();
+        view.areTableGridlinesDisplayed = !view.areTableGridlinesDisplayed;
+        await context.sync();
+      });
+    } else {
+      showToastMessage("Gridlines not supported in Word Online");
+    }
   } catch (error) {
     console.error("toggleGridlines error:", error);
   } finally {
@@ -149,15 +155,35 @@ async function toggleGridlines(event) {
 // ─────────────────────────────────────────────
 // TOGGLE PARAGRAPHS
 // Toggles paragraph marks visibility.
+// Works in Word Desktop (WordApiDesktop 1.4)
+// Shows message in Word Online
 // ─────────────────────────────────────────────
 async function toggleParagraphs(event) {
   try {
-    if (Office.actions && Office.actions.invoke) {
-      await Office.actions.invoke("ShowAllFormattingMarks");
+    if (Office.context.requirements.isSetSupported("WordApiDesktop", "1.4")) {
+      await Word.run(async (context) => {
+        const view = context.document.getView();
+        view.load("areAllNonprintingCharactersDisplayed");
+        await context.sync();
+        view.areAllNonprintingCharactersDisplayed = !view.areAllNonprintingCharactersDisplayed;
+        await context.sync();
+      });
+    } else {
+      showToastMessage("Use Ctrl+Shift+8 for paragraph marks");
     }
   } catch (error) {
     console.error("toggleParagraphs error:", error);
   } finally {
     event.completed();
+  }
+}
+
+// ─────────────────────────────────────────────
+// TOAST MESSAGE HELPER
+// Shows a toast notification (used by ribbon buttons)
+// ─────────────────────────────────────────────
+function showToastMessage(message) {
+  if (typeof showToast === "function") {
+    showToast(message);
   }
 }
